@@ -17,7 +17,8 @@ export const styles = StyleSheet.create({
     color: '#FFF',
   },
   indexText:{
-    fontSize: 18, 
+    fontSize: 16, 
+    marginBottom:'3%',
     fontWeight: "bold", 
     color: 'black' 
   },
@@ -28,7 +29,7 @@ export const styles = StyleSheet.create({
     padding: 10
   },
   priceText:{
-    fontSize: 20,
+    fontSize: 18,
     color:'black' 
   },
   paymentButton:{
@@ -49,7 +50,7 @@ export const styles = StyleSheet.create({
   },
   //수량디자인
   selectQuantityView: {
-    marginLeft:"30%",
+    marginLeft:"60%",
     width:"auto",
     borderRadius: 6,
     borderColor: '#D4D4D4',
@@ -169,5 +170,12 @@ export const styles = StyleSheet.create({
     paddingBottom:10,
     borderBottomWidth:1,
     borderColor:'lightgray',
+  },
+  productImage: {
+    flex: 1,
+    //margin: 5,
+    width: 75,
+    height: 65,
+    borderRadius: 6,
   },
 })

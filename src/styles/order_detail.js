@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         marginBottom:10,
     },
     payInfo_view:{
-        height:200,
+        
         backgroundColor:'white',
         paddingVertical:10,
         paddingHorizontal:10,
@@ -33,7 +33,6 @@ export const styles = StyleSheet.create({
     },
     payInfoDetail_view:{
         marginTop:20,
-        height:100,
         borderWidth:1,
         borderColor:'#D1D1D1',
         paddingVertical:10,
@@ -56,4 +55,10 @@ export const styles = StyleSheet.create({
         fontFamily:'Pretendard-SemiBold',
         marginBottom:5,
     },
+    text_info:{
+        fontsize:8,
+        fontFamily:'Pretendard-SemiBold',
+        marginBottom:5,
+        color:'black'
+    }
 });

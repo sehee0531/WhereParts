@@ -23,8 +23,8 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
     borderBottomWidth:1, //
     justifyContent: 'flex-end',
     paddingVertical:3,
-    paddingHorizontal:5,
-    backgroundColor:'#E0F0FF'
+    marginHorizontal:'5%',
+    backgroundColor:'white'
   },
   tabBar_button:{
     width:"20%",
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
     //상품 설명 부분
     productInfo_view: { 
         borderTopWidth:1,
-        marginHorizontal:20,
+        marginHorizontal:'5%',
         paddingBottom:30,
         padding: 20,
         borderColor: '#E6E6E6',

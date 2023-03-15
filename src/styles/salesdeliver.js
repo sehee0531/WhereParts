@@ -5,9 +5,6 @@ const ScreenWidth=Dimensions.get('window').width;
 export const styles = StyleSheet.create({
     total_container:{
         flex:1,
-         backgroundColor:'white',
-     
-       
     },
     rowLayout: {
         flex: 1,
@@ -17,29 +14,34 @@ export const styles = StyleSheet.create({
         fontFamily: "Cochin",
         fontSize: 15,
         color: "black",
-        marginTop:10,
     },
-  
+    productImage: {
+        flex: 1,
+        //margin: 5,
+        width: 75,
+        height: 65,
+        borderRadius: 6,
+      },
     //아이템 상세내역
     topContainer:{
-        flex:2,
-        borderRadius: 10,
+        flex:2.5,
+        flexDirection:"column",
+        backgroundColor:'#FFFF',
         borderColor: '#D1D1D1',
-        borderWidth:2,
-        marginTop:30,
-        marginLeft:30,
-        marginRight:30,
     },
 
     //배송선택
     bodyContainer:{
-        flex:5,
+        flex:7,
+        marginTop:'3%',
+        marginBottom:'5%',
+        padding:20,
         //borderWidth:1,
-        marginTop:30,
-        marginLeft:30,
-        marginRight:30,
+        backgroundColor:'white',
+        
     },
     textInput: {
+       
         backgroundColor: 'white',
         marginBottom: 20,
         paddingHorizontal: 20,

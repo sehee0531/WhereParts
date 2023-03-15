@@ -25,8 +25,8 @@ export const styles = StyleSheet.create({
         flex:2,
         flexDirection: 'row',
         alignItems: 'center',
-        borderBottomColor:'#D1D1D1',
-        borderBottomWidth:1,
+        //borderBottomColor:'#D1D1D1',
+        //borderBottomWidth:1,
         paddingBottom:10,
        // borderWidth:1,
       },
@@ -40,9 +40,11 @@ export const styles = StyleSheet.create({
         flex:1,
         justifyContent:'center',
         alignItems:'center',
-        borderRightColor:'#D1D1D1',
-        borderRightWidth:1,
-        
+        borderWidth:1,
+        borderRadius:5,
+        borderColor: '#E9E9E9',
+        marginHorizontal:'2%',
+        paddingVertical:'2%'
       },
       deliverInfoButtonView:{
         flex:1,

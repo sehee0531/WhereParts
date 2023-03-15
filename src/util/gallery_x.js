@@ -70,7 +70,7 @@ export default class GalleryX extends Component {
 
         const uris=[];
         for(let i=0;i<this.selectedIndexes.length;i++) 
-            uris.push(this.state.imageURIs[i]);
+            uris.push(this.state.imageURIs[this.selectedIndexes[i]]);
 
         console.log(uris);
         this.onResultListener(uris);

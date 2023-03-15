@@ -13,16 +13,15 @@ export const styles = StyleSheet.create({
     },
 
     viewBodyLayout: {
-        flex: 6,
+        flex: 1,
     },
 
     viewBottomLayout: {
-        flex: 1,
         flexDirection: 'row',
-        marginTop: 20,
-        marginLeft: 30,
-        marginRight: 30,
-        marginBottom: 30
+        zIndex:11,
+        borderTopStartRadius: 40,
+        borderTopEndRadius: 40,
+        backgroundColor: 'white',
     },
 
     // 품번 카메라 디자인

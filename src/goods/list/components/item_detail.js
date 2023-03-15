@@ -1,13 +1,12 @@
 import React, { Component, PureComponent, useMemo } from 'react';
 import {
     ScrollView, Pressable, View, Text,
-    Image, FlatList, TouchableOpacity, Button, Alert, Dimensions, BackHandler, Modal
+    Image, FlatList, TouchableOpacity, Button, Alert, Dimensions, BackHandler, Modal, Keyboard
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
-import IconDelete from 'react-native-vector-icons/Ionicons';
 import { styles } from "../../../styles/list/home_item_detil";
 import IconRadio from 'react-native-vector-icons/MaterialIcons';
 import IconPopup from 'react-native-vector-icons/EvilIcons';
@@ -57,6 +56,9 @@ export default class DetailItemView extends Component {
     }
 
     componentDidMount() {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+
         this.callimageLengthAPI().then((response) => {
             console.log('Image length', response);
             this.setState({ imageLength: response.length });
@@ -104,11 +106,25 @@ export default class DetailItemView extends Component {
         BackHandler.addEventListener("hardwareBackPress", this.backPressed);
     }
     componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
         BackHandler.removeEventListener('hardwareBackPress', this.backPressed);
+    }
+
+    keyboardDidShow = () => {
+        console.log('Keyboard Shown');
+    }
+
+    keyboardDidHide = () => {
+        console.log('Keyboard Hide');
+        this.onValueChange();
     }
 
     backPressed = () => {
         this.props.navigation.pop();
+        if(this.props.route.params.pickRefreshListener !=null){
+            this.props.route.params.pickRefreshListener();
+        }
         return true;
     }
 
@@ -199,14 +215,11 @@ export default class DetailItemView extends Component {
         return genuineText[value - 1];
     }
 
-    closeModal = () => {
-        //this.props.detailViewModalListener(false);
-        this.props.navigation.pop();
-    } 
+
 
     // 수정 버튼 클릭
     editButtonClicked = () => {
-        this.setState({ editGoodsViewVisible: true, quantity: this.state.item.quantity });
+        this.setState({ editGoodsViewVisible: true });
         this.onValueChange();
     }
     //수정 취소 버튼 클릭
@@ -369,6 +382,8 @@ export default class DetailItemView extends Component {
         } else {
             this.callRemoveWishAPI().then((response) => {
                 console.log("remove wish", response);
+                //this.props.navigation.navigate('PickList')
+                //this.props.route.params.pickRefreshListener();
             })
 
             console.log("색칠안한하트");
@@ -448,32 +463,29 @@ export default class DetailItemView extends Component {
                             {this.state.editGoodsViewVisible ?
                                 <>
                                     <TouchableOpacity onPress={this.editCancelButtonClicked} >
-                                        <Text style={styles.text}>수정취소  </Text>
+                                        <Text style={[styles.text,{color:'#808e9b'}]}>수정취소  </Text>
                                     </TouchableOpacity >
                                 </> :
                                 <>
                                     <TouchableOpacity onPress={this.editButtonClicked} >
-                                        <Text style={styles.text}>수정    </Text>
+                                        <Text style={[styles.text,{color:'#808e9b'}]}>수정    </Text>
                                     </TouchableOpacity >
                                 </>}
                             <TouchableOpacity onPress={this.removeButtonClicked}>
-                                <Text style={styles.text}>삭제    </Text>
+                                <Text style={[styles.text,{color:'#808e9b'}]}>삭제    </Text>
                             </TouchableOpacity>
 
                             {valid==1 && 
                                 <TouchableOpacity onPress={this.goodsDisableButtonClicked}>
-                                <Text style={styles.text}>숨김    </Text>
+                                <Text style={[styles.text,{color:'#808e9b'}]}>숨김    </Text>
                             </TouchableOpacity>}
                             {valid==0 && 
                             <TouchableOpacity onPress={this.goodsEnableButtonClicked}>
-                                <Text style={styles.text}>숨김해제    </Text>
+                                <Text style={[styles.text,{color:'#808e9b'}]}>숨김해제    </Text>
                             </TouchableOpacity>}
                         </>}
 
-                    <TouchableOpacity
-                        onPress={this.closeModal}>
-                        <IconDelete name="close" color="black" size={35}></IconDelete>
-                    </TouchableOpacity>
+
                 </View>
 
                 <View style={styles.itemInfo_view}>

@@ -12,13 +12,12 @@ export default class CompanyCamera extends Component {
         super(props);
 
         this.cutImageStyle={
-            top:'5%', 
-            left:'10%',
-            right:'10%',
-            bottom:'5%',
+            top:'7%', 
+            left:'9%',
+            right:'9%',
+            bottom:'33%',
             position:'absolute',
             zIndex:2, 
-            borderWidth:1, 
             borderColor:'white',
         };
     }
@@ -59,7 +58,7 @@ export default class CompanyCamera extends Component {
     render() {
         return(
             <View style={styles.container}>
-                <CameraX autoClose={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle} onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
+                <CameraX autoClose={true} blur={true} cameraBorder={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle}  onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
             </View>
         );
     }

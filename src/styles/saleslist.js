@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Pretendard-SemiBold',
     color: '#000000',
-    marginBottom:"5%",
     //marginLeft: "15%",
   },
   product: {

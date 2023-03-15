@@ -11,12 +11,11 @@ export default class BusinessCardCamera extends Component {
 
         this.cutImageStyle={
             position:'absolute',
-            top:'30%', 
+            top:'26%', 
             left:'10%',
             right:'10%',
-            bottom:'30%',
+            bottom:'48%',
             zIndex:2, 
-            borderWidth:1, 
             borderColor:'white'
         };
     }
@@ -34,7 +33,7 @@ export default class BusinessCardCamera extends Component {
     render() {
         return(
             <View style={styles.container}>
-                <CameraX autoClose={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle} onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
+                <CameraX autoClose={true} blur={true} cameraBorder={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle} onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
             </View>
         );
     }

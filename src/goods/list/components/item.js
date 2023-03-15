@@ -62,7 +62,7 @@ export default class ListItem extends PureComponent {
                                 <Text style={[styles.itemDetail_text,{color:'#EE636A'}]}>1km</Text> 
                             </View>
                             <View style={{flex:1,justifyContent:'flex-end'}}>
-                                <Text style={styles.itemDetail_text}>{item.registerDate.slice(2,10)}</Text>
+                               {/*  <Text style={styles.itemDetail_text}>{item.registerDate.slice(2,10)}</Text> */}
                             </View>
                         </View>                 
                     </View>

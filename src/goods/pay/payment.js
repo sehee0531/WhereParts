@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, NativeModules,Pressable, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, NativeModules,Pressable, TextInput,Image } from 'react-native';
 
 import Address from "../../goods/pay/address";
 import { Picker } from '@react-native-picker/picker';
@@ -16,19 +16,29 @@ class Payment extends Component {
         this.userID = this.props.route.params.userID;
 
         this.state={
-            zonecode:'',
+            imageURL:null,
+            zipNo:"",
+            roadAddr:"",
+            validForm:false,
             detailAddress:'',
-            defaultAddress:'',
 
             quantity:1,
             paymentMethod:1,
             buyerName:"",
             buyerTel:"",
             address:"",
-            bigo:"배송요청사항",
+            bigo:"",
         }
     }
-
+    componentDidMount(){
+       this.callGetGoodsImageAPI(this.item.id).then((response) => {
+            let reader = new FileReader();
+            reader.readAsDataURL(response);
+            reader.onloadend = () => {
+                this.setState({ imageURL: reader.result })
+            }
+        });
+    }
     callAndroidPaymentActivity = () => {
         const { ActivityStartModule } = NativeModules;
         ActivityStartModule.startPayment(JSON.stringify(this.payload), failedListener = (message) => {
@@ -36,7 +46,7 @@ class Payment extends Component {
         }, successListener = (message) => {
             console.log('완료',message);
             this.props.navigation.navigate('PayComplete',{payload:this.payload});
-        });nt
+        });
     }
 
     countPlus=()=>{
@@ -53,6 +63,45 @@ class Payment extends Component {
         }
     }
 
+    getAddressInfo=(zipNo, roadAddr)=>{
+        //console.log("리스너순서 1");
+        this.addressInfoRender(zipNo,roadAddr).then(this.onValueChange);
+    }
+
+    async addressInfoRender(zipNo, roadAddr){
+        this.setState({zipNo:zipNo, roadAddr:roadAddr});
+    }
+
+    onValueChange=()=>{
+        let isValidForm = true;
+        //console.log("온밸챈지실행");
+        //console.log("리스너순서 2");
+        console.log("zipNo",this.state.zipNo.trim().length);
+        console.log("roadAddr",this.state.roadAddr.trim().length);
+        //주문자
+        if(this.state.buyerName.length == 0){
+            isValidForm=false;
+        }
+        //연락처
+        if(this.state.buyerTel.length==0){
+            isValidForm=false;
+        }
+        //우편번호
+        if(this.state.zipNo.trim().length==0){
+            isValidForm=false;
+        }
+        //도로명주소
+        if(this.state.roadAddr.trim().length==0){
+            isValidForm=false;
+        }
+        //상세주소
+        if(this.state.detailAddress.length==0){
+            isValidForm=false;
+        }
+
+        this.setState({ validForm: isValidForm });
+    }
+
     paymentButtonClicked = () => {
         const payload = { 
             buyerID:this.userID,
@@ -64,7 +113,7 @@ class Payment extends Component {
             total:(this.item.price*this.state.quantity),
             payKind:this.state.paymentMethod,
             payBank:"우리",
-            address:this.props.route.params.roadAddr + " " + this.state.detailAddress,
+            address:this.state.roadAddr + " " + this.state.detailAddress,
             bigo:this.state.bigo,
         };
 
@@ -100,18 +149,36 @@ class Payment extends Component {
             return response.json();
         }
     }
-
+    async callGetGoodsImageAPI(goodsID) {
+        let manager = new WebServiceManager(Constant.serviceURL + "/GetGoodsImage?id=" + goodsID + "&position=1");
+        let response = await manager.start();
+        if (response.ok)
+            return response.blob();
+    }
     render() {
+     
         return (
             <View style={template.total_container}>
                 <ScrollView style={template.ScrollView}>
                     <View style={template.container}>
                         <View style={styles.indexView}>
-                            <Text style={styles.indexText}>주문상품</Text>
-                            <Text> 상품명 : {this.item.name}</Text>
-                            <Text> 상품번호 : {this.item.number}{"\n"}</Text>
+                        <Text style={styles.indexText}>주문상품</Text>
                             <View style={{flexDirection:'row'}}>
-                                <Text style={styles.priceText}> {this.item.price*this.state.quantity}원</Text>
+                                <View style={{ width: 85, height: 75 }}>
+                                        <Image
+                                            source={{ uri: this.state.imageURL }}
+                                            style={styles.productImage} />
+                                </View>
+                                <View style={{flexDirection:'column'}}>
+                                    <Text> 상품명 : {this.item.name}</Text>
+                                    <Text> 상품번호 : {this.item.number}{"\n"}</Text>
+                                    <Text style={styles.priceText}> {this.item.price*this.state.quantity}원</Text>
+                                </View>
+                                
+                            </View>
+                           
+                            <View style={{flexDirection:'row',}}>
+                               
                                 <View style={styles.selectQuantityView}>
                                     <Pressable onPress={() => this.countMinus(this.state.quantity)} style={styles.quantityItem}>
                                         <Text style={styles.quantityItemText}>-</Text>
@@ -128,15 +195,7 @@ class Payment extends Component {
                             </View>                                                
                         </View>
 
-                        <View style={[styles.indexView,{marginTop: 20}]}>
-                            <Text style={styles.indexText}>결제수단</Text>
-                            <Picker
-                                selectedValue={this.state.paymentMethod}
-                                onValueChange={(value, index) => { this.setState({ paymentMethod: value }) }}>
-                                <Picker.Item label='카드결제' value="1" />
-                                <Picker.Item label='계좌이체' value="2" />
-                            </Picker>
-                        </View>
+                       
                         {/* 주소 */}
                         <View style={styles.container}>
                             <View style={styles.deliverView}>
@@ -144,30 +203,33 @@ class Payment extends Component {
                                 <TextInput style={styles.textInput}
                                     placeholder="주문자 이름을 입력하세요"
                                     onChangeText={(value) => this.setState({ buyerName: value })}
+                                    onEndEditing={(event)=> this.onValueChange()}
                                     value={this.state.buyerName} />
                                 <TextInput style={styles.textInput}
                                     placeholder="휴대폰 번호를 입력하세요"
                                     onChangeText={(value) => this.setState({ buyerTel: value })}
+                                    onEndEditing={(event)=> this.onValueChange()}
                                     value={this.state.buyerTel} />
                             </View>
                             <Text style={styles.title}>주소</Text>
                             <View style={styles.rowLayout}>
                                 <View style={styles.number_text}>
-                                    <Text style={styles.text}>{this.props.route.params.zipNo}</Text>
+                                    <Text style={styles.text}>{this.state.zipNo}</Text>
                                 </View>
 
-                                <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={() => this.props.navigation.navigate("SearchAddress")}>
+                                <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={() => this.props.navigation.navigate("SearchAddress", {addressListener:this.getAddressInfo})}>
                                     <Text style={styles.btn_text}>우편번호 찾기</Text>
                                 </TouchableOpacity>
                             </View>
 
                             <View style={styles.address_text}>
-                                <Text style={styles.text}>{this.props.route.params.roadAddr}</Text>
+                                <Text style={styles.text}>{this.state.roadAddr}</Text>
                             </View>
 
                             <TextInput style={styles.textInput}
                                 placeholder="상세 주소를 입력하세요"
                                 onChangeText={(value) => this.setState({ detailAddress: value })}
+                                onEndEditing={(event)=> this.onValueChange()}
                                 value={this.state.detailAddress} />
 
                             <TextInput style={styles.textInput}
@@ -178,7 +240,11 @@ class Payment extends Component {
                                              
                     </View>
                 </ScrollView>
-                <TouchableOpacity style={styles.paymentButton} onPress={this.paymentButtonClicked}/*onPress={this.callAndroidPaymentActivity}*/><Text style={styles.buyButtonText}>결제하기</Text></TouchableOpacity>
+                {
+                    this.state.validForm ? 
+                    (<TouchableOpacity style={styles.paymentButton} onPress={this.paymentButtonClicked}/*onPress={this.callAndroidPaymentActivity}*/><Text style={styles.buyButtonText}>결제하기</Text></TouchableOpacity>)
+                    :(<TouchableOpacity style={[styles.paymentButton,{backgroundColor: "#C9CCD1"}]} ><Text style={styles.buyButtonText}>결제하기</Text></TouchableOpacity>)
+                }
             </View>
         );
     }

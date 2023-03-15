@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
 
   //sort 정렬바
   sortBar_view: { // 가로정렬
-    backgroundColor: '#EDEDED',
+    backgroundColor: 'white',
     width:"100%",
     paddingVertical:"1%",
     paddingRight:"4%",
@@ -96,7 +96,7 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
   listItem_view: { //공통부분
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth:1,
+    //borderWidth:1,
     backgroundColor:'white',
     paddingHorizontal:10,
     paddingVertical:5,

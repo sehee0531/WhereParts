@@ -83,8 +83,9 @@ export const styles = StyleSheet.create({
   //text
   btn_text: {
     fontFamily: "Cochin",
-    fontSize: 15,
+    fontSize: 16,
     color: "white",
+    alignItems:'center'
   },
   camera_text: {
     fontFamily: "Cochin",

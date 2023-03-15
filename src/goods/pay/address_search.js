@@ -55,7 +55,7 @@ class SearchAddress extends Component {
                         </View>
                     </View>
                         {this.state.modal == false && (<AddressView />)}
-                        {this.state.modal == true && (<SearchView searchText={this.state.value} navigation={this.props.navigation}/>)}
+                        {this.state.modal == true && (<SearchView searchText={this.state.value} navigation={this.props.navigation} addressListener={this.props.route.params.addressListener} />)}
 
                 </View>
             </View>
@@ -122,6 +122,12 @@ class SearchView extends Component {
         }
     }
 
+    addressListClicked=(zipNo,roadAddr)=>{
+        //console.log("addressList", zipNo + roadAddr);
+        this.props.navigation.navigate('Payment');
+        this.props.addressListener(zipNo, roadAddr);
+    }
+
     async callGetAddressAPI() {
         let manager = new WebServiceManager("https://business.juso.go.kr/addrlink/addrLinkApi.do?confmKey=devU01TX0FVVEgyMDIzMDIwOTE3MzczMjExMzQ5Njg=&currentPage=" + this.state.page + "&countPerPage=4&keyword=" + this.props.searchText + "&resultType=json");
         let response = await manager.start();
@@ -148,7 +154,7 @@ class SearchView extends Component {
           
             <FlatList
                 data={this.state.addressList}
-                renderItem={( {item} ) =><TouchableOpacity activeOpacity={0.8} onPress={()=>{ this.props.navigation.navigate('Payment',{roadAddr:item.roadAddr,zipNo:item.zipNo})}}>
+                renderItem={( {item} ) =><TouchableOpacity activeOpacity={0.8} onPress={()=>this.addressListClicked(item.zipNo,item.roadAddr)}>
                     <View style={styles.outputStyle}>
                     <View style={styles.rowLayout}>
                         <View style={styles.titleLayout}>

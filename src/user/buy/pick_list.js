@@ -21,13 +21,15 @@ class PickList extends Component {
         }
     }
     componentDidMount() {
+        this.goGetWish()
+    }
+    goGetWish=()=>{
         this.getUserID().then(()=>{
             this.callGetWishAPI().then((response) => { 
                 this.setState({wishContent:response})
              });
              
         } )
-        
     }
     async getUserID(){
         let obj=await AsyncStorage.getItem('obj')
@@ -55,7 +57,7 @@ class PickList extends Component {
                 <FlatList
                     numColumns={2} 
                     data={this.state.wishContent}
-                    renderItem={({ item, index }) => <ListItem index={index} item={item} id={item.id} navigation={this.props.navigation} />}
+                    renderItem={({ item, index }) => <ListItem index={index} item={item} id={item.id} navigation={this.props.navigation} pickRefreshListener={this.goGetWish}/>}
                     scrollEventThrottle={16}
                 />
            </View>
@@ -71,7 +73,6 @@ class ListItem extends Component {
         this.item=this.props.item;
         this.state = {
             imageURI: null,
-            isDetailViewModal:false,
             dipsbuttonclicked:false,
         };
     }
@@ -109,26 +110,15 @@ class ListItem extends Component {
     }
     
     handleDetailViewModal=()=> {
-        //this.setState({isDetailViewModal:!this.state.isDetailViewModal});
-        //this.props.navigation.navigate('GoodsDetail',{item:this.props.item});
-        this.props.navigation.navigate('GoodsDetail', { id:this.props.item.id, userID:this.props.item.userID });
+        this.props.navigation.navigate('GoodsDetail', { id:this.props.item.id, userID:this.props.item.userID,pickRefreshListener:this.props.pickRefreshListener });
     }
    
     dipsButtonClicked=()=>{
-        if (this.state.dipsbuttonclicked == false) {
-            this.callAddWishAPI().then((response)=>{
-                console.log(response);
-            })
-            console.log("색칠하트");
-            this.setState({ dipsbuttonclicked: true });
-        } else {
-            this.callRemoveWishAPI().then((response)=>{
-                console.log(response);
-            })
-
-            console.log("색칠안한하트");
-            this.setState({ dipsbuttonclicked: false })
-        }        
+       
+        this.callRemoveWishAPI().then((response)=>{
+            console.log(response);
+            this.props.pickRefreshListener();
+        })
     }
     async callGetImageAPI() {
         let manager = new WebServiceManager(Constant.serviceURL + "/GetGoodsImage?id=" + this.props.id + "&position=1");
@@ -144,13 +134,7 @@ class ListItem extends Component {
         else
             Promise.reject(response);
     }
-    async callAddWishAPI(){
-        let manager=new WebServiceManager(Constant.serviceURL+"/AddWishList?user_id="+this.id+"&goods_id="+this.item.id);
-        let response=await manager.start();
-
-        if(response.ok)
-            return response.json();
-    }
+    
     async callRemoveWishAPI(){
         let manager = new WebServiceManager(Constant.serviceURL+"/RemoveWishList?user_id="+this.id+"&goods_id="+this.item.id)
         let response = await manager.start();
@@ -166,7 +150,7 @@ class ListItem extends Component {
                 <View style={styles.itemView}>
                     <View style={styles.pickView}>
                         <TouchableOpacity onPress ={this.dipsButtonClicked}>
-                            <Icon name="favorite" color={this.state.dipsbuttonclicked ? "#EE636A" : "lightgrey"} size={25}></Icon>
+                            <Icon name="favorite" color={"#EE636A" } size={25}></Icon>
                         </TouchableOpacity>
                     </View>
                     <Image

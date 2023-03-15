@@ -93,6 +93,7 @@ class AddGoods extends Component {
 
     keyboardDidHide = () => {
         console.log('Keyboard Hide');
+        this.onValueChange();
     }
 
     // userID값 가져오는 함수
@@ -298,9 +299,9 @@ class AddGoods extends Component {
         if (this.state.imageURLs.length == 0) {
             isValidForm = false;
         }
-        if (this.state.spec.trim().length == 0) {
+        /*if (this.state.spec.trim().length == 0) {
             isValidForm = false;
-        }
+        }*/
 
         this.setState({ validForm: isValidForm });
     }
@@ -320,7 +321,7 @@ class AddGoods extends Component {
         }
 
         manager.addFormData("data", {
-            userID: this.state.id, name: this.state.name, number: this.state.number,
+            userID: this.id, name: this.state.name, number: this.state.number,
             price: this.state.price, hashTag: this.state.allhashTag.replace(/,\s*$/, ""), quantity: this.state.quantity,
             quality: this.state.quality, genuine: this.state.genuine, spec: this.state.spec, filenames: filenames
         });
@@ -376,6 +377,7 @@ class AddGoods extends Component {
     }
 
     render() {
+        console.log(this.state.imageURLs)
         return (
             <>
                 <View style={template.total_container}>
@@ -540,12 +542,12 @@ class AddGoods extends Component {
                                     </View>
                                     <View style={styles.center_view}>
                                         <TouchableOpacity activeOpacity={0.8} style={[styles.add_btn,{width: 40,height: 40,}]} onPress={() => { this.setState({ quantity: this.state.quantity + 1 }) }}>
-                                            <Text style={styles.btn_text}>+</Text>
+                                            <Text style={[styles.btn_text,{fontSize:25}]}>+</Text>
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.center_view}>
-                                        <TouchableOpacity activeOpacity={0.8} style={[styles.add_btn,{width: 40,height: 40,}]} onPress={this.minusNum}>
-                                            <Text style={styles.btn_text}>-</Text>
+                                        <TouchableOpacity activeOpacity={0.8} style={[styles.add_btn,{width: 40,height: 40,justifyContent:'flex-start'}]} onPress={this.minusNum}>
+                                            <Text style={[styles.btn_text,{fontSize:35,}]}>-</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -605,10 +607,10 @@ class AddGoods extends Component {
                         {/* 상품 등록하기 버튼 부분*/}
                         {this.state.validForm ?
                             (<TouchableOpacity activeOpacity={0.8} style={styles.activate_btn} onPress={() => this.setState({ goodsDetailModal: !this.state.goodsDetailModal })}>
-                                <Text style={styles.btn_text}>상품등록하기</Text>
+                                <Text style={[styles.btn_text,{fontSize:17}]}>상품등록하기</Text>
                             </TouchableOpacity>)
                             : (<TouchableOpacity activeOpacity={0.8} style={[styles.activate_btn,{backgroundColor: "#C9CCD1"}]}>
-                                <Text style={styles.btn_text}>상품등록하기</Text>
+                                <Text style={[styles.btn_text,{fontSize:17}]}>상품등록하기</Text>
                             </TouchableOpacity>)}
                     </ScrollView>
 
@@ -625,6 +627,8 @@ class ImageRender extends Component {
     render() {
         const imagePath = this.props.image.item;
         const imageIndex = this.props.image.index;
+        console.log('imagePath',imagePath);
+        
         return (
             <TouchableOpacity onPress={(index) => this.props.imageDetailModal(imageIndex)} >
                 <Image source={{ uri: imagePath }} style={styles.image_view}

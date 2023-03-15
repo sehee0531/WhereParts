@@ -8,6 +8,8 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import IconLeaf from 'react-native-vector-icons/FontAwesome';
 import IconList from 'react-native-vector-icons/Feather'
 import { ScrollView } from 'react-native-gesture-handler';
+import WebServiceManager from '../util/webservice_manager';
+import Constant from '../util/constatnt_variables';
 
 
 class MyPage extends Component {
@@ -16,28 +18,21 @@ class MyPage extends Component {
     this.idRef = React.createRef();
     this.passwordRef = React.createRef();
     this.state = {
-
-      userID:[],
-      idError: true,
-      passwordError: true,
-      confirmreg: true,
-      companyNo: '',
-      passwd: '',
+      companyNo: null, 
     }
   }
 
-  componentDidMount(){
-    this.getCompanyNumber().then(() => {
-      this.setState({userID:this.state.userID[0]})
-      console.log(this.state.userID[0]);
-  });
+  componentDidMount() {
+    this.getLoginInfo().then((value) => {
+      this.setState({companyNo: value.slice(0, 3) + "-" + value.slice(3, 5) + "-" + value.slice(5, 10) });
+    });
   }
 
-  async getCompanyNumber() {
+  async getLoginInfo() {
     let obj = await AsyncStorage.getItem('obj')
     let parsed =JSON.parse(obj);
     if(obj!== null){
-        this.state.userID.push(parsed.companyNo);
+        return parsed.companyNo;
     }
     else{
         return false;
@@ -64,6 +59,9 @@ class MyPage extends Component {
   goPickListScreen=()=>{
     this.props.navigation.navigate('PickList')
   }
+  goEditProfileScreen=()=>{
+    this.props.navigation.navigate('EditProfile');
+  }
 
   render() {
     return (
@@ -76,7 +74,7 @@ class MyPage extends Component {
                 <View style={styles.container}>
                    <View style={styles.item1}>
                         <Text style={styles.name_text}>엠카즈 정비소</Text>
-                        <Text style={styles.number_text}>{this.state.userID.slice(0,3)}-{this.state.userID.slice(3,5)}-{this.state.userID.slice(5,10)}</Text>
+                        <TouchableOpacity onPress={this.goEditProfileScreen}><Text style={styles.number_text}>{this.state.companyNo}</Text></TouchableOpacity>
                         <Text>부산광역시 해운대구 우동 128,</Text>
                         <Text>(가나다빌딩, 1005호)</Text>
                    </View>

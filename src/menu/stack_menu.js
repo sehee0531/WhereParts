@@ -18,7 +18,10 @@ import WebView from "../goods/list/components/web_view";
 import Payment from "../goods/pay/payment";
 import PayComplete from "../goods/pay/pay_complete";
 import GoodsDetail from "../goods/list/components/item_detail";
-import PayDetail from "../user/buy/pay_detail";
+import OrderDetail from "../user/buy/order_detail";
+import EditProfile from "../user/buy/edit_profile";
+
+
 //로그인 경로
 import Login from "../login/member_register";
 import SignUp from "../login/signup";
@@ -70,6 +73,8 @@ class Stack extends Component {
                 <NativeStack.Screen name="PartsNoCamera" component={PartsNoCamera}
                     options={{ title: "" }} />
 
+                <NativeStack.Screen name="EditProfile" component={EditProfile}
+                    options={{ title: "" }}/>
                 <NativeStack.Screen name="SalesList" component={SalesList}
                     options={{ title: "판매 내역" }}/>
                 <NativeStack.Screen name="BuyList" component={BuyList}
@@ -93,9 +98,9 @@ class Stack extends Component {
                 <NativeStack.Screen name="SearchAddress" component={SearchAddress}
                     options={{ title: "주소검색" }} />
            
-                <NativeStack.Screen name="PayDetail" component={PayDetail}
+                <NativeStack.Screen name="OrderDetail" component={OrderDetail}
                     options={{ title: "주문상세" }} />
-                
+               
             </NativeStack.Navigator>
            
         );

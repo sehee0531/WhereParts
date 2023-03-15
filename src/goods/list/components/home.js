@@ -204,7 +204,7 @@ class Home extends Component {
                 <Modal transparent={true} visible={this.state.indicator}>
                     <Indicator/>
                 </Modal>
-                <View style={{ flex: 1 }}>  
+                <View style={{ flex: 1, backgroundColor:'white' }}>  
                     <FlatList
                         //style={styles.goodsContent_view}
                         data={this.state.goodsContent}

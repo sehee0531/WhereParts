@@ -16,14 +16,13 @@ export default class PartsNoCamera extends Component {
 
         this.cutImageStyle={
             position:'absolute',
-            top:'44%', 
+            top:'33%', 
             left:'15%',
             right:'15%',
-            bottom:'44%', 
-            zIndex:2, 
-            borderWidth:1,
+            bottom:'55%', 
+            zIndex:2,
             borderColor:'white',
-        };       
+        };
     }
 
     onCapturedListener=(uri)=> {
@@ -39,7 +38,7 @@ export default class PartsNoCamera extends Component {
     render() {
         return(
             <View style={styles.background_view}>
-                <CameraX autoClose={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle} onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
+                <CameraX autoClose={true} blur={true} cameraBorder={true} navigation={this.props.navigation} cutImageStyle={this.cutImageStyle} onCapturedListener={this.onCapturedListener} onCutImageListener={this.onCutImageListener} />
             </View>
         );
     }
