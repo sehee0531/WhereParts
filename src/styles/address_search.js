@@ -47,15 +47,15 @@ export const styles = StyleSheet.create({
       //borderWidth:1,
     },
     inputStyle:{
-      borderColor:'#909098',
+      borderColor:'#BDBDBD',
       borderWidth:1,
       borderRadius: 5,
-      height: 60,
-      paddingLeft:10,
-      
+      height: 50,
+      paddingHorizontal:'2%'      
     },
     input:{
-      width:'90%'
+      width:'90%',
+    
       
     },
     search:{
@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
       borderColor:'#909098',
       borderWidth:1,
       height: 105,
-     
+      paddingHorizontal:'2%'
     },
     titleLayout:{
       flex:2.5,

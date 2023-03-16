@@ -155,6 +155,7 @@ class AddGoods extends Component {
             this.setState({ cameraPopupMenuVisiable: true })
         }
     }
+
     //카메라, 갤러리에서 이미지 받아오는 함수
     getImageURL = (imageURLs) => {
         for (let i = 0; i < imageURLs.length; i++) {
@@ -173,6 +174,7 @@ class AddGoods extends Component {
     goCameraButtonClicked = () => {
         this.props.navigation.push("PartsNoCamera", { onResultListener: this.goPartsNo });
     }
+
     // 품번 가지고오는 함수 getGoodsNo
     goPartsNo = (imageURI) => {
         this.callPartsNoAPI(imageURI).then((response) => {
@@ -196,7 +198,7 @@ class AddGoods extends Component {
     //카메라로 이동
     goCameraScreen = () => {
         this.setState({ cameraPopupMenuVisiable: false });
-        this.props.navigation.navigate("GoodsImageCamera", { callback: this.getImageURL, imageLength: this.state.imageURLs.length });
+        this.props.navigation.navigate("GoodsImageCamera", { onResultListener: this.getImageURL, imageLength: this.state.imageURLs.length });
     }
     //갤러리로 이동
     goGalleryScreen = () => {
@@ -204,7 +206,7 @@ class AddGoods extends Component {
         this.props.navigation.navigate("Gallery", { onResultListener: this.getImageURL, imageLength: this.state.imageURLs.length });
     }
 
-  //해시태그 추가버튼을 누를때
+    //해시태그 추가버튼을 누를때
     addTag = () => {
         
         const tagNames=this.state.tagName.split(' ');
@@ -213,7 +215,6 @@ class AddGoods extends Component {
             tagNames.splice(tagNames.length-1)
         }
         if (this.state.hashTag.length< 7 && tagNames.length<7 && this.state.hashTag.length+tagNames.length<8) {
-            
             this.addHashTag(tagNames).then(()=>{
                 this.onValueChange();
             });
@@ -227,6 +228,12 @@ class AddGoods extends Component {
         this.hashTagRef.clear();
     }
 
+    hashTagOnChangeText=(value)=>{
+        const reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/;
+        let newTagName=value.replace(reg,'')
+        this.setState({ tagName: newTagName})
+    }
+    
     async addHashTag(tagNames){
         this.setState({ hashTag: this.state.hashTag.concat(tagNames) })
     }
@@ -491,10 +498,9 @@ class AddGoods extends Component {
                                             </Text>
                                             <TextInput
                                                 ref={(c) => { this.hashTagRef = c; }}
-
                                                 returnKeyType="next"
                                                 onSubmitEditing={this.addTag}
-                                                onChangeText={(value) => this.setState({ tagName: value})}
+                                                onChangeText={(value) => this.hashTagOnChangeText(value)}
                                                 value={this.state.tagName}
                                             />
                                         </View>

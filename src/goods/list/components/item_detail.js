@@ -408,7 +408,11 @@ export default class DetailItemView extends Component {
         console.log("isValidForm", isValidForm);
         this.setState({ validForm: isValidForm });
     }
-
+    hashTagOnChangeText=(value)=>{
+        const reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/;
+        let newTagName=value.replace(reg,'')
+        this.setState({ tagName: newTagName})
+    }
     handleModal = (index) => {
         this.setState({
             imageVisible: !this.state.imageVisible,
@@ -613,7 +617,6 @@ export default class DetailItemView extends Component {
                                         </View>
                                     </View>}
 
-
                                     {/* 제품 상태 */}
                                     {!this.state.editGoodsViewVisible && <View style={styles.toggleDetailItem}>
                                         <View style={styles.toggleDetailItemTItle}>
@@ -671,7 +674,7 @@ export default class DetailItemView extends Component {
                                             ref={(c) => { this.hashTagRef = c; }}
                                             returnKeyType="next"
                                             onSubmitEditing={()=>this.addTag()}
-                                            onChangeText={(value) => this.setState({ tagName: value })}
+                                            onChangeText={(value) => this.hashTagOnChangeText(value)}
                                             value={this.state.tagName}
                                         />
                                     </View>

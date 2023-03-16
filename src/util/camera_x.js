@@ -27,6 +27,7 @@ class CameraX extends Component {
         this.state={
             device:null,
             cutImage:null,
+
             // blur
             topBlur:{},
             leftBlur:{},
@@ -36,10 +37,12 @@ class CameraX extends Component {
             imageTopLeft:{},
             imageTopRight:{},
             imageBottomLeft:{},
-            imageBottomLeft:{},
+            imageBottomRight:{},
 
             textView:{},
-            cameraButtonView:{},
+
+            capturedViewVisible:false
+            //cameraButtonView:{},
         };
     }
 
@@ -76,6 +79,7 @@ class CameraX extends Component {
         });
         const imageURI='file://'+photo.path;
         this.props.onCapturedListener(imageURI);
+        
         if(this.props.hasOwnProperty("onCutImageListener") && this.props.hasOwnProperty("cutImageStyle")) {
             this.imageModule.getCutImageUri(imageURI,this.source,this.target,this.failedCallback,this.successCallback);
         }
@@ -97,7 +101,7 @@ class CameraX extends Component {
         this.setState({cutImage:imageURI});
         this.props.onCutImageListener(imageURI);
         if(this.props.autoClose===true)
-            this.props.navigation.pop();      
+            this.props.navigation.pop();
     }
 
     //render에 정의한 View 사이즈 가져오기
@@ -114,62 +118,65 @@ class CameraX extends Component {
             this.source={width:width,height:height};
             sourceHeight=this.source.height;
 
-            // cameraButtonView width:100%, height:카메라화면의 20%, top:카메라화면의 80%
-            this.setState({cameraButtonView: { width: "100%", height: this.source.height*0.2, top: this.source.height*0.8, position: "absolute" }});
             console.log('source',this.source);
         })
 
         //console.log("sourceHeight", sourceHeight);// sourceHeight 0
+        if (this.props.hasOwnProperty("onCutImageListener") && this.props.hasOwnProperty("cutImageStyle")) {
+            this.capturedView.current.measure((fx, fy, width, height, px, py) => {
+                this.target = { top: py - topMargin, left: px - leftMargin, width: width, height: height };
+                //console.log("sourceHeight",sourceHeight); // sourceHeight 645
 
-        this.capturedView.current.measure( (fx, fy, width, height, px, py) => {
-            this.target={top:py-topMargin,left:px-leftMargin,width:width,height:height};
+                // 사진 안내문구 위치 설정(capturedView 위에 위치하도록)
+                this.setState({
+                    //textView height:20, width:140 
+                    textView: { top: (this.target.top - 20), left: (this.source.width - 140) / 2, color: "white", position: 'absolute', zIndex: 3 },
+                });
 
-            //console.log("sourceHeight",sourceHeight); // sourceHeight 645
-            
-            this.setState({
-                //textView height:20, width:140 
-                textView: { top: (this.target.top - 20), left: (this.source.width - 140) / 2, color: "white", position: 'absolute', zIndex: 2 },
+                // blur를 true로 받을 때
+                if (this.props.blur == true) {
+                    this.setState({
+                        //blur
+                        topBlur: { top: 0, left: 0, width: "100%", height: this.target.top, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute", zIndex: 2 },
+                        leftBlur: { top: this.target.top, left: 0, width: this.target.left, height: this.target.height, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute", zIndex: 2 },
+                        rightBlur: { top: this.target.top, left: (this.target.left + this.target.width), width: this.target.left, height: this.target.height, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute", zIndex: 2 },
+                        bottomBlur: { top: (this.target.top + this.target.height), left: 0, width: "100%", height: this.source.height - (this.target.top + this.target.height), backgroundColor: "rgba(0,0,0,0.6)", position: "absolute", zIndex: 2 },
+                    });
+                }
+                // cameraBorder를 true로 받을 때
+                if (this.props.cameraBorder == true) {
+                    this.setState({
+                        //cameraBorder 이미지크기: 27x27
+                        imageTopLeft: { top: this.target.top, left: this.target.left, position: 'absolute', zIndex: 2 },
+                        imageTopRight: { top: this.target.top, left: (this.target.left + this.target.width - 27), position: 'absolute', zIndex: 2 },
+                        imageBottomLeft: { top: (this.target.top + this.target.height - 27), left: this.target.left, position: 'absolute', zIndex: 2 },
+                        imageBottomRight: { top: (this.target.top + this.target.height - 27), left: (this.target.left + this.target.width - 27), position: 'absolute', zIndex: 2 },
+                    });
+                }
+                this.setState({ capturedViewVisible: true });
+                console.log('target', this.target);
             });
-            
-            // blur를 true로 받을 때
-            if(this.props.blur == true){
-                this.setState({
-                    //blur
-                    topBlur: { top: 0, left: 0, width: "100%", height: this.target.top, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute" },
-                    leftBlur: { top: this.target.top, left: 0, width: this.target.left, height: this.target.height, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute" },
-                    rightBlur: { top: this.target.top, left: (this.target.left + this.target.width), width: this.target.left, height: this.target.height, backgroundColor: "rgba(0,0,0,0.6)", position: "absolute" },
-                    bottomBlur: { top: (this.target.top + this.target.height), left: 0, width: "100%", height: this.source.height - (this.target.top + this.target.height), backgroundColor: "rgba(0,0,0,0.6)", position: "absolute" },
-                });
-            }
-            // cameraBorder를 true로 받을 때
-            if(this.props.cameraBorder == true){
-                this.setState({
-                    //cameraBorder 이미지크기: 27x27
-                    imageTopLeft: { top: this.target.top, left: this.target.left, position: 'absolute', zIndex: 2 },
-                    imageTopRight: { top: this.target.top, left: (this.target.left + this.target.width - 27), position: 'absolute', zIndex: 2 },
-                    imageBottomLeft: { top: (this.target.top + this.target.height - 27), left: this.target.left, position: 'absolute', zIndex: 2 },
-                    imageBottomRight: { top: (this.target.top + this.target.height - 27), left: (this.target.left + this.target.width - 27), position: 'absolute', zIndex: 2 },
-                });
-            }
-            console.log('target',this.target);
-        });
+        }
         
-        
-        /*this.textView.current.measure((fx, fy, width, height, px, py) => {
+        /*
+        // height 측정은 o, width는 전체 너비로 결과가 나옴
+        this.textView.current.measure((fx, fy, width, height, px, py) => {
             this.text={width:width,height:height};
 
             this.setState({textView: {top:0,left:(this.source.width-this.text.width)/2,color:"white",borderWidth:1,position:'absolute',zIndex:2}})
             console.log('text',this.text.width);
-        });*/
+        });
+        */
         //console.log('source',this.source);
     }
 
     render() {
+        console.log("render");
         if (this.state.device == null) return (<></>);
         return (
             <View style={styles.container}>
                 <View style={styles.viewBodyLayout} onLayout={(event) => this.getViewSize(event)} ref={this.cameraView}>
-                    <View style={{ width: "100%", height: "100%", position: 'absolute', zIndex: 1 }}>
+                    <View style={{ width: "100%", height: "100%", zIndex:1}}>
                         <Camera
                             ref={this.camera}
                             //frameProcessor={this.frameProcessor}
@@ -179,29 +186,36 @@ class CameraX extends Component {
                             isActive={true}
                         />
                         
-                        {/* cameraBorder이 true일때만 보이게 */}
-                        {this.props.cameraBorder==true && <>
+                        {/* cameraBorder가 true이고 좌표계산이 끝났으면 */}
+                        {this.props.cameraBorder==true && this.state.capturedViewVisible==true && <>
                             <Image style={this.state.imageTopLeft} source={require('../images/icon/angle-icon/angle11.png')} />
                             <Image style={this.state.imageTopRight} source={require('../images/icon/angle-icon/angle22.png')} />
                             <Image style={this.state.imageBottomLeft} source={require('../images/icon/angle-icon/angle33.png')} />
                             <Image style={this.state.imageBottomRight} source={require('../images/icon/angle-icon/angle44.png')} /></>
                         }
 
-                        <View style={this.state.topBlur} />
-                        <View style={this.state.leftBlur} />
-                        <Text style={this.state.textView} /*ref={this.textView}*/>사각형 안에 맞춰주세요</Text>
-                        <View style={this.props.cutImageStyle} ref={this.capturedView} />
-                        <View style={this.state.rightBlur} />
-                        <View style={this.state.bottomBlur} />
-                    </View>
+                        {/* 전체화면에서 captured View만 있을 경우 */}
+                        {this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && <>
+                            <Text style={this.state.textView} /*ref={this.textView}*/>사각형 안에 맞춰주세요</Text>
+                            <View style={this.props.cutImageStyle} ref={this.capturedView} /></>
+                        }
 
-                    <View style={[styles.viewBottomLayout, this.state.cameraButtonView]}>
-                        <View style={styles.cameraLayout}>
-                            <TouchableOpacity style={styles.btn_camera} onPress={this.shutterButtonClicked}>
-                                <IconCamera name="camera" size={30} color="#0066FF" style={{ position: 'absolute' }} />
-                                <IconCircle name="circle-o" size={69} color="#0066FF" />
-                            </TouchableOpacity>
-                        </View>
+                        {/* blur==true (captured View이외의 화면을 뿌옇게) 하고 좌표 계산이 끝났으면 */}
+                        {this.props.blur==true && this.state.capturedViewVisible==true && <>
+                            <View style={this.state.topBlur} />
+                            <View style={this.state.leftBlur} />                            
+                            <View style={this.state.rightBlur} />
+                            <View style={this.state.bottomBlur} /></>
+                        }
+                    </View>
+                </View>
+
+                <View style={styles.viewBottomLayout}>
+                    <View style={styles.cameraLayout}>
+                        <TouchableOpacity style={styles.btn_camera} onPress={this.shutterButtonClicked}>
+                            <IconCamera name="camera" size={30} color="#0066FF" style={{ position: 'absolute' }} />
+                            <IconCircle name="circle-o" size={69} color="#0066FF" />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>

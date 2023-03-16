@@ -12,10 +12,10 @@ export default class CompanyCamera extends Component {
         super(props);
 
         this.cutImageStyle={
-            top:'7%', 
+            top:'11%', 
             left:'9%',
             right:'9%',
-            bottom:'33%',
+            bottom:'29%',
             position:'absolute',
             zIndex:2, 
             borderColor:'white',

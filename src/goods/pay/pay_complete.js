@@ -4,15 +4,17 @@ import { View, Text, ScrollView, BackHandler, TouchableOpacity } from 'react-nat
 import { template } from "../../styles/template/page_style";
 import { styles } from "../../styles/payment";
 
+
 class PayComplete extends Component {
     constructor(props) {
         super(props);
-        this.payload = this.props.route.params.payload;
+        this.result = this.props.route.params.result;
 
+        console.log('result',this.result);
 
         BackHandler.addEventListener("hardwareBackPress", this.backPressed);
     }
-    componentWillUnmount() {
+    componentWillUnmount() {        
         console.log('뒤로가기 했을 때 홈으로')
         BackHandler.removeEventListener('hardwareBackPress', this.backPressed);
     }
@@ -27,8 +29,9 @@ class PayComplete extends Component {
     goBuyListScreen = () => {
         this.props.navigation.navigate('BuyList');
     }
+
     render() {
-        const { name, number, price, quantity } = this.payload;
+        const { orderNo, goodsID, total, address,buyerTel, payBank } = this.result;
         return (
             <View style={template.total_container}>
                 <ScrollView>
@@ -36,25 +39,25 @@ class PayComplete extends Component {
                         <Text>결제가 완료되었습니다</Text>
                         <View style={[styles.indexView,{marginBottom: 20 }]}>
                             <Text style={styles.indexText}>주문상품</Text>
-                            <Text> 상품명 : {name}</Text>
-                            <Text> 상품번호 : {number}{"\n"}</Text>
+                            <Text> 상품명 : {orderNo}</Text>
+                            <Text> 상품번호 : {orderNo}{"\n"}</Text>
                             <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ fontSize: 20, color: 'black' }}> {price}원</Text>
+                                <Text style={{ fontSize: 20, color: 'black' }}> {total}원</Text>
 
                             </View>
                         </View>
                         <View style={[styles.indexView,{marginBottom: 20 }]}>
                             <Text style={styles.indexText}>결제정보</Text>
-                            <Text> 결제카드 : 농협</Text>
+                            <Text> 결제카드 : {payBank}</Text>
                             <Text> 할부기간 : 일시불</Text>
-                            <Text> 결제금액 : {price}원</Text>
-                            <Text> 상품번호 : {number}</Text>
+                            <Text> 결제금액 : {total}원</Text>
+                            <Text> 상품번호 : {goodsID}</Text>
                         </View>
                         <View style={[styles.indexView,{marginBottom: 20 }]}>
                             <Text style={styles.indexText}>배송지</Text>
-                            <Text> 홍길동</Text>
-                            <Text> (50834) 경남 김해시 인제로 197  </Text>
-                            <Text> 010-1234-5678  </Text>
+                            <Text> {buyerTel}</Text>
+                            <Text> {address}  </Text>
+                            <Text> {buyerTel}  </Text>
                         </View>
                         <View style={styles.buttonView}>
                             <TouchableOpacity style={[styles.goListButton,{marginRight:10}]} onPress={this.goHomeScreen}><Text style={styles.buyButtonText}>홈으로</Text></TouchableOpacity>

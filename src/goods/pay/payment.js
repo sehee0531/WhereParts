@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, NativeModules,Pressable, TextInput,Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, NativeModules,Pressable, TextInput,Image,Keyboard, Alert } from 'react-native';
 
 import Address from "../../goods/pay/address";
 import { Picker } from '@react-native-picker/picker';
@@ -28,26 +28,51 @@ class Payment extends Component {
             buyerTel:"",
             address:"",
             bigo:"",
+            orderNo:null
         }
     }
+
     componentDidMount(){
-       this.callGetGoodsImageAPI(this.item.id).then((response) => {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+    
+        console.log('item=',this.item);
+        this.callGetGoodsImageAPI(this.item.id).then((response) => {
             let reader = new FileReader();
             reader.readAsDataURL(response);
             reader.onloadend = () => {
                 this.setState({ imageURL: reader.result })
             }
         });
-    }
-    callAndroidPaymentActivity = () => {
-        const { ActivityStartModule } = NativeModules;
-        ActivityStartModule.startPayment(JSON.stringify(this.payload), failedListener = (message) => {
-            console.log('취소',message);
-        }, successListener = (message) => {
-            console.log('완료',message);
-            this.props.navigation.navigate('PayComplete',{payload:this.payload});
+
+        this.callGetOrderNoAPI().then((response)=> {
+            console.log('orderNo',response);
+            if(response.success==1)
+                this.setState({orderNo:response.orderNo});
+            else {
+                Alert.alert('구매불가', '일시적인 오류로 상품을 구매할 수 없습니다.', [
+                    { text: '확인', onPress: () => {this.props.navigation.pop()} },
+                ]);
+            }
         });
     }
+
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+        //BackHandler.removeEventListener("hardwareBackPress", this.backPressed);
+    }
+
+    keyboardDidShow = () => {
+        console.log('Keyboard Shown');
+    }
+
+    keyboardDidHide = () => {
+        console.log('Keyboard Hide');
+        this.onValueChange();
+    }
+
+    
 
     countPlus=()=>{
         if( this.state.quantity>0 && this.state.quantity < this.item.quantity)
@@ -102,27 +127,64 @@ class Payment extends Component {
         this.setState({ validForm: isValidForm });
     }
 
-    paymentButtonClicked = () => {
+    //결제하기 버튼 클릭시
+    paymentButtonClicked = () => { 
+        const {id,name,price} = this.item;       
         const payload = { 
-            buyerID:this.userID,
-            goodsID:this.item.id,
-            buyerName:this.state.buyerName,
-            buyerTel:this.state.buyerTel,
+            orderNo:this.state.orderNo,
+            goodsName:name,
+            goodsID:id,
             quantity:this.state.quantity,
-            price:this.item.price,
-            total:(this.item.price*this.state.quantity),
-            payKind:this.state.paymentMethod,
-            payBank:"우리",
-            address:this.state.roadAddr + " " + this.state.detailAddress,
-            bigo:this.state.bigo,
-        };
+            price:price
+        };   
+        
 
         console.log("결제정보",payload);
-        this.callAddOrderAPI(payload).then((response) => {
-            console.log("구매완료", response);
-        });
 
-        this.props.navigation.navigate("Home");
+        this.callAndroidPaymentActivity(payload);
+        //this.callAddOrderAPI(payload).then((response) => {
+        //    console.log("구매완료", response);
+        //});
+
+        //this.props.navigation.navigate("Home");
+    }
+
+    //안드로이 네이티브 결제 액티비티 호출
+    callAndroidPaymentActivity = (payload) => {
+        console.log("결제정보",payload);
+        const { ActivityStartModule } = NativeModules;
+        ActivityStartModule.startPayment(JSON.stringify(payload), failedListener = (message) => {
+            console.log('취소',message);
+        }, successListener = (message) => {
+            console.log('완료',message);
+            const paymentData = JSON.parse(message);
+            console.log('data=',paymentData.data);            
+            const addOrderData = this.getAddOrderData(paymentData)
+            console.log('payment data=',addOrderData);
+            this.props.navigation.navigate('PayComplete',{result:addOrderData});
+        });
+    }
+
+    //AddOrder API호출에 필요한 데이터 생성
+    getAddOrderData=(paymentData)=> {
+        //const cardData = JSON.parse(paymentData.card_data);
+        const payload = {
+            orderNo:this.state.orderNo,
+            buyerID:this.userID,
+            goodsID:this.item.id,
+            quantity:this.state.quantity,
+            price:this.item.price,
+            total:paymentData.data.price,
+            buyerTel:this.state.buyerTel,
+            payKind:1,
+            payBank:paymentData.data.card_data.card_company,
+            address:this.state.roadAddr,
+            bigo:this.state.bigo,
+            receiptID:paymentData.data.receipt_id,
+            billURL:paymentData.data.receipt_url
+
+        };
+        return payload;
     }
 
     async callAddOrderAPI(value){
@@ -155,6 +217,14 @@ class Payment extends Component {
         if (response.ok)
             return response.blob();
     }
+
+    async callGetOrderNoAPI() {
+        let manager = new WebServiceManager(Constant.serviceURL + "/GetOrderNo?id=" + this.userID);
+        let response = await manager.start();
+        if(response.ok)
+            return response.json();
+    }
+
     render() {
      
         return (
@@ -170,8 +240,10 @@ class Payment extends Component {
                                             style={styles.productImage} />
                                 </View>
                                 <View style={{flexDirection:'column'}}>
+                                    <Text> 주문번호 : {this.state.orderNo}</Text>
                                     <Text> 상품명 : {this.item.name}</Text>
-                                    <Text> 상품번호 : {this.item.number}{"\n"}</Text>
+                                    <Text> 품번 : {this.item.number}</Text>
+                                    <Text> 구매가능 수량 : {this.item.quantity}개{"\n"}</Text>
                                     <Text style={styles.priceText}> {this.item.price*this.state.quantity}원</Text>
                                 </View>
                                 

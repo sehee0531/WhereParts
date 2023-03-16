@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, Image,Modal, Alert,
-TouchableWithoutFeedback,Keyboard } from 'react-native';
+TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import { styles } from "../styles/login/signup";
 
@@ -36,8 +36,8 @@ class SignUp extends Component {
             companyPopupMenuVisible:false,  //사업자등록증 팝업메뉴
             cardPopupMenuVisible:false,  //명함 팝업메뉴
             
-            companyNoImageURL: '', 
-            cardImageURL:'',
+            companyImageURI: '', 
+            nameCardImageURI:'',
             
         }
     }
@@ -66,7 +66,7 @@ class SignUp extends Component {
     makeBinaryData() {
         let imageData = []; 
             //사업자등록번호
-            const uri = this.state.companyNoImageURL; 
+            const uri = this.state.companyImageURI; 
             const companyNoData = {
                 uri: uri,
                 type: "image/jpeg",
@@ -74,7 +74,7 @@ class SignUp extends Component {
             }
             imageData.push(companyNoData);
             //명함
-            const carduri = this.state.cardImageURL;
+            const carduri = this.state.nameCardImageURI;
             const cardData = {
                 uri: carduri,
                 type: "image/jpeg",
@@ -84,31 +84,31 @@ class SignUp extends Component {
         return imageData;
     }
 
-    
-
-    upload = () => { 
+    goAddUser = () => { 
         if (this.state.passwd !== this.state.passwordok) {
             Alert.alert("비밀번호가 일치하지 않습니다");
         }
         else {
             const imageData = this.makeBinaryData();
-            this.callUploadAPI(imageData).then((response) => {
+            this.callAddUserAPI(imageData).then((response) => {
                 console.log(response);
-                    if(response.success== "-1"){
-                        Alert.alert("이미 있는 사업자번호입니다");
-                    }
-                    else{
-                        Alert.alert('가입 신청 완료', '입력 된 내용 확인 후 승인이 완료됩니다.', [
-                            { text: '확인', onPress: () => {this.props.navigation.navigate("Login")} },
-                        ]);
-                        //this.setState({ modal: this.state.modal ? false : true }); //신청대기 모달
-                        
-                    }
+                if (response.success == "0") {
+                    Alert.alert("이미 있는 사업자번호입니다");
+                }
+                else {
+                    Alert.alert('가입 신청 완료', '입력 된 내용 확인 후 승인이 완료됩니다.', [
+                        { text: '확인', onPress: () => { this.props.navigation.navigate("Login") } },
+                    ]);
+                    //this.setState({ modal: this.state.modal ? false : true }); //신청대기 모달
+
+                }
             })
         }
     }
 
-    async callUploadAPI(imageData) { // 사업자번호&명함&데이터를 서버로 보내주는 API
+
+    //사업자 등록증, 명함 이미지와 사업자등록 번호와 패스워드를 서버로 전송하여 사용자 추가 요청
+    async callAddUserAPI(imageData) { 
         let manager = new WebServiceManager(Constant.serviceURL + "/AddUser", "post");
         manager.addBinaryData("file1", imageData[0]); //사업자번호
         manager.addBinaryData("file2", imageData[1]); //명함
@@ -122,70 +122,74 @@ class SignUp extends Component {
             return response.json();
         }
     }
-
-
-    //사업자등록증 카메라 버튼 클릭
-    clickRegisterButton = () => {
-         this.setState({registerPopupMenuVisiable:true})    
+    
+    
+     //사업자등록증 이미지 클릭시 (카메라/갤러리 선택 팝업메뉴 띄움)
+    companyImageClicked = () => {
+        this.setState({companyPopupMenuVisible:true})    
     }
 
-    //사업자 등록증 사진인식 후 (카메라로부터 인식된 사업자등록번호와 imageURI 받음)
+   //명함 이미지 버튼 클릭 (카메라/갤러리 선택 팝업메뉴 띄움)
+    nameCardImageClicked=()=>{
+        this.setState({cardPopupMenuVisible:true})
+    }
+
+    //사업자 등록증 이미지 선택을 위한 카메라로 이동
+    goCompanyCameraScreen=()=>{
+        this.setState({companyPopupMenuVisible:false});
+        this.props.navigation.navigate('CompanyCamera',{onResultListener:this.companyImageInfo});
+    }
+
+    //사업자 등록증 이미지 선택을 위한 갤러리로 이동
+    goCompanyGalleryScreen = () => {
+        this.setState({companyPopupMenuVisible:false});
+        //this.props.navigation.navigate('Gallery', { companyImageInfoListener:this.companyImageInfo })
+        this.props.navigation.navigate('RegisterGallery', { onResultListener:this.companyImageInfo });   
+    }    
+
+    // 명함 이미지 선택을 위한 카메라로 이동
+    goNamecardCameraScreen=()=>{
+        this.setState({cardPopupMenuVisible:false});
+        this.props.navigation.navigate('BusinessCardCamera',{onResultListener: this.cardImageInfo});
+    }
+    // 명함 이미지 선택을 위한 갤러리로 이동
+    goNamecardGalleryScreen = () => { 
+        this.setState({cardPopupMenuVisible:false}); 
+        this.props.navigation.navigate('PhotoGallery', {onResultListener: this.cardImageInfo}) 
+    }
+
+    
+    //사업자 등록증 이미지 선택 후 (카메라로부터 인식된 사업자등록번호와 imageURI 받음)
     companyImageInfo=(companyNo,imageURI)=>{
         if(companyNo==="0") {
-            this.setState({companyNoImageURL:imageURI});
+            this.setState({companyImageURI:imageURI});
             Alert.alert('사업자 인식', '사업자 등록번호를 인식하지 못했습니다. 직접 입력하세요', [
                 { text: '확인', onPress: () => {this.setState({companyNo:""})}}]);
         }
         else
-            this.setState({companyNo:companyNo,companyNoImageURL:imageURI})
+            this.setState({companyNo:companyNo,companyImageURI:imageURI})
         this.imageLength++;
         this.onValueChange();
     }
 
-    //
-    //갤러리로 이동
-    goRegisterGalleryScreen = () => {
-        this.setState({registerPopupMenuVisiable:false});
-        //this.props.navigation.navigate('Gallery', { companyImageInfoListener:this.companyImageInfo })
-        this.props.navigation.navigate('RegisterGallery', { onResultListener:this.companyImageInfo });   
-    }
-    //카메라로 이동
-    goRegisterCameraScreen=()=>{
-        this.setState({registerPopupMenuVisiable:false});
-        this.props.navigation.navigate('CompanyCamera',{onResultListener:this.companyImageInfo});
-    }
-   
-
-    //명함 버튼 클릭
-    clickPhotoButton=()=>{
-        this.setState({photoPopupMenuVisiable:true})
-    }
-    //명함 사진 URL
-    cardImageInfo=(cardImageURI)=>{
-        this.setState({cardImageURL:cardImageURI});
-        this.imageLength++;
-        this.onValueChange();
-    }
     
-    // 명함 카메라로 이동
-    goPhotoCameraScreen=()=>{
-        this.setState({photoPopupMenuVisiable:false});
-        this.props.navigation.navigate('BusinessCardCamera',{onResultListener: this.cardImageInfo});
-    }
-    // 명함 갤러리로 이동
-    goPhotoGalleryScreen = () => { 
-        this.setState({photoPopupMenuVisiable:false}); 
-       this.props.navigation.navigate('PhotoGallery', {onResultListener: this.cardImageInfo}) 
+    //카메라 또는 갤러리에서 선택된 명함 이미지 URI
+    cardImageInfo=(imageURI)=>{
+        this.setState({nameCardImageURI:imageURI});
+        this.imageLength++;
+        this.onValueChange();
     }
 
-    registerRemoveClicked=()=>{
-        this.setState({companyNoImageURL:""});
+    //사업자 등록증 이미지 삭제시
+    companyImageRemoveClicked=()=>{
+        this.setState({companyImageURI:""});
         this.imageLength--;
         this.onValueChange();
     }
 
-    photoRemoveClicked=()=>{
-        this.setState({cardImageURL:""});
+    //명함 이미지 삭제시
+    nameCardImageRemoveClicked=()=>{
+        this.setState({nameCardImageURI:""});
         this.imageLength--;
         this.onValueChange();
     }
@@ -202,7 +206,7 @@ class SignUp extends Component {
         if(this.state.passwordok.trim().length == 0){
             isValidForm=false;
         }
-        if(this.imageLength == 0 || this.imageLength == 1 ){
+        if(this.imageLength < 2 ){
             isValidForm = false;
         }
         console.log("imageLength", this.imageLength);
@@ -229,11 +233,7 @@ class SignUp extends Component {
         return (
             <>
                 <View style={styles.total_container}>
-                    <ScrollView
-                      onScroll={event=>{
-                        this.getViewSize(event.nativeEvent.contentOffset.y)
-                    }}
-                    >
+                    <ScrollView onScroll={event=>{this.getViewSize(event)}}>
                         <View style={styles.container}>
                             <View style={styles.header_textLayout_view}>
                                 <Text style={[styles.default_text,styles.main_title_text]}>필수 항목 첨부</Text>
@@ -245,13 +245,13 @@ class SignUp extends Component {
                                     <Text style={[styles.default_text,styles.imageRegister_title_text]}>사업자 등록증</Text>
 
                                     <View onLayout={(event)=>{this.getViewSize(event)}} ref={this.registerCameraIcon}>
-                                        {this.state.companyNoImageURL=="" ? 
+                                        {this.state.companyImageURI=="" ? 
                                         (<TouchableOpacity style={styles.imageRegister_btn} onPress={()=>this.setState({companyPopupMenuVisible:true})}>
                                             <IconCamera name="image-inverted" size={60}></IconCamera>
                                         </TouchableOpacity>):
                                         (<TouchableOpacity style={styles.imageRegister_btn}>
-                                            <Image source={{ uri: this.state.companyNoImageURL }} style={styles.imageRegister_image_view}/>
-                                            <TouchableOpacity  style={styles.imageDelete_btn} onPress={this.registerRemoveClicked}>
+                                            <Image source={{ uri: this.state.companyImageURI }} style={styles.imageRegister_image_view}/>
+                                            <TouchableOpacity  style={styles.imageDelete_btn} onPress={this.companyImageRemoveClicked}>
                                                     <IconDelete name="close-circle" color="black" size={27}></IconDelete>
                                              </TouchableOpacity>
                                         </TouchableOpacity>)
@@ -263,13 +263,13 @@ class SignUp extends Component {
                                     <Text style={[styles.default_text,styles.imageRegister_title_text]}>명함</Text>
 
                                     <View onLayout={(event)=>{this.getViewSize(event)}} ref={this.photoCameraIcon}>
-                                    {this.state.cardImageURL=="" ? 
+                                    {this.state.nameCardImageURI=="" ? 
                                         (<TouchableOpacity style={styles.imageRegister_btn} onPress={()=>this.setState({cardPopupMenuVisible:true})}>
                                             <IconCamera name="image-inverted" size={60}></IconCamera>
                                         </TouchableOpacity>):
                                         (<TouchableOpacity style={styles.imageRegister_btn}>
-                                            <Image source={{ uri: this.state.cardImageURL }} style={styles.imageRegister_image_view}/>
-                                            <TouchableOpacity style={styles.imageDelete_btn} onPress={this.photoRemoveClicked}>
+                                            <Image source={{ uri: this.state.nameCardImageURI }} style={styles.imageRegister_image_view}/>
+                                            <TouchableOpacity style={styles.imageDelete_btn} onPress={this.nameCardImageRemoveClicked}>
                                                 <IconDelete name="close-circle" color="black" size={27}></IconDelete>
                                             </TouchableOpacity>
                                         </TouchableOpacity>)}
@@ -287,7 +287,7 @@ class SignUp extends Component {
                             >
                             <PopupMenu x={this.modalRegisterCameraX} y={this.modalRegisterCameraY} 
                             closeModal={() => this.setState({ companyPopupMenuVisible:false})}
-                            goCamera={this.goRegisterCameraScreen} goGallery={this.goRegisterGalleryScreen} />
+                            goCamera={this.goCompanyCameraScreen} goGallery={this.goCompanyGalleryScreen} />
                             </Modal>
 
                             {/*명함모달*/}
@@ -299,7 +299,7 @@ class SignUp extends Component {
                             >
                             <PopupMenu x={this.modalPhotoCameraX} y={this.modalPhotoCameraY} 
                             closeModal={() => this.setState({ cardPopupMenuVisible:false})}
-                            goCamera={this.goPhotoCameraScreen} goGallery={this.goPhotoGalleryScreen} />
+                            goCamera={this.goNamecardCameraScreen} goGallery={this.goNamecardGalleryScreen} />
                             </Modal>
 
                             <View style={styles.textInputLayout_view}>
@@ -340,7 +340,7 @@ class SignUp extends Component {
                         </View>
                     </ScrollView>
                     {this.state.validForm ? 
-                    (<TouchableOpacity activeOpacity={0.8} style={[styles.default_btn,styles.enable_btn]} onPress={this.upload}>
+                    (<TouchableOpacity activeOpacity={0.8} style={[styles.default_btn,styles.enable_btn]} onPress={this.goAddUser}>
                         <Text style={[styles.default_text,styles.signup_btn_text]}>회원가입 신청</Text></TouchableOpacity>)
                         :(<TouchableOpacity activeOpacity={0.8} style={[styles.default_btn,styles.disable_btn]}>
                         <Text style={[styles.default_text,styles.signup_btn_text]}>회원가입 신청</Text>

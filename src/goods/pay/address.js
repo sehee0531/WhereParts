@@ -14,6 +14,8 @@ class Address extends Component {
         }
     }
 
+
+
     render(){
         return(
             <View style={styles.total_container}>

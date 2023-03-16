@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Text,  TextInput, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import React, { Component, PureComponent } from 'react';
+import { View, Text,  TextInput, TouchableOpacity, FlatList, ScrollView,Keyboard} from 'react-native';
 
 import { styles } from "../../styles/address_search";
 
@@ -18,6 +18,12 @@ class SearchAddress extends Component {
         }
     }
 
+    componentDidMount(){
+       
+    }
+    componentWillUnmount(){
+      
+    }
     //검색 버튼을 눌렀을 때
     searchAddress = () => {
         if(this.state.searchText == "")
@@ -26,6 +32,7 @@ class SearchAddress extends Component {
         }
         else{
             this.setState({modal:true});
+            Keyboard.dismiss();
         }
     }
     pageUp = () => {
@@ -33,6 +40,16 @@ class SearchAddress extends Component {
     }
     pageDown = () => {
         this.setState({ page: this.state.page - 1 });
+    }
+
+    addressOnEndEditing=()=>{
+        if(this.state.searchText==""){
+            alert("주소를 입력해주세요");
+        }
+        else{
+            this.setState({value: this.state.searchText,modal:true})
+        }
+        
     }
 
     render() {
@@ -45,7 +62,7 @@ class SearchAddress extends Component {
                             <View style={styles.rowLayout}>
                                 <TextInput style={styles.input}
                                     onChangeText={(text) => this.setState({ searchText: text  })}
-                                    onEndEditing={() => this.setState({value: this.state.searchText,modal:true}) }
+                                    onEndEditing={this.addressOnEndEditing }
                                     placeholder="도로명 또는 지번을 입력하세요"
                                     placeholderTextColor="light grey" />
                                 <TouchableOpacity style={styles.search} onPress={this.searchAddress}>
@@ -86,7 +103,7 @@ class AddressView extends Component {
     }
 }
 
-class SearchView extends Component {
+class SearchView extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -167,7 +184,7 @@ class SearchView extends Component {
                             <View style={styles.flex1}><Text style={{ color: "black" }}>{item.jibunAddr}</Text></View >
                         </View>
                         <View style={styles.numberLayout}>
-                            <Text style={styles.text}>{item.zipNo}</Text>
+                            <Text style={[styles.text,{fontWeight:'600'}]}>{item.zipNo}</Text>
                         </View>
                     </View>
                 </View></TouchableOpacity>}

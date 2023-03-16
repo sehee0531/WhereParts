@@ -11,10 +11,10 @@ export default class BusinessCardCamera extends Component {
 
         this.cutImageStyle={
             position:'absolute',
-            top:'26%', 
+            top:'28%', 
             left:'10%',
             right:'10%',
-            bottom:'48%',
+            bottom:'46%',
             zIndex:2, 
             borderColor:'white'
         };

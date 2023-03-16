@@ -17,7 +17,8 @@ export default class GalleryX extends Component {
         console.log("max값",this.props.max)
         console.log("autoClose", this.props.autoClose)
         this.state={
-            imageURIs:[]
+            imageURIs:[],
+            imageLength:0,
         };
     }
 
@@ -48,6 +49,7 @@ export default class GalleryX extends Component {
             this.onResultListener(this.state.imageURIs[index]);
             this.props.navigation.pop();
         }
+        this.setState({imageLength:this.selectedIndexes.length})
     }
 
     //사진 선택을 해제한 경우
@@ -62,6 +64,7 @@ export default class GalleryX extends Component {
             this.isSelectEnabled=true;
             this.isDeSelectEnabled=true;
         }
+        this.setState({imageLength:this.selectedIndexes.length})
     }
 
     //선택완료 버튼을 클릭한 경우
@@ -90,10 +93,20 @@ export default class GalleryX extends Component {
     render() {
         return(
             <SafeAreaView style={styles.container}>
-                <TouchableOpacity onPress={this.onSelectComplete} style={{alignItems:'flex-end', paddingRight:'2%',  paddingTop:'1.5%'}}>
-                    <ImagePlus name={'image-plus'} size={40}/>
-                    {/*<Text style={styles.text}>선택완료</Text>*/}
-                </TouchableOpacity>
+                <View style={styles.headerBar}>
+                    {this.max!=null &&<View style={{flex:1,flexDirection:'row'}}>
+                        <Text style={[styles.text,{fontSize:15}]}> {this.state.imageLength} / </Text>
+                        <Text style={[styles.text,{fontSize:15,color:'black'}]}>{this.max}</Text>
+                    </View>}
+                   
+                    <View style={{flex:1, alignItems:'flex-end'}}>
+                        <TouchableOpacity onPress={this.onSelectComplete}>
+                            <Text style={styles.text}>완료</Text>
+                        </TouchableOpacity>
+                    </View>
+                   
+                </View>
+             
                 <FlatList data={this.state.imageURIs} horizontal={false} numColumns={3} renderItem={(item)=><ListItem item={item} onSelectListener={(index)=>this.onSelectListener(index)} onDeSelectListener={(index)=>this.onDeSelectListener(index)} getSelectEnabled={this.getSelectEnabled} getDeSelectEnabled={this.getDeSelectEnabled}/>}/>              
             </SafeAreaView>
         );
@@ -158,7 +171,13 @@ const ScreenWidth=Dimensions.get('window').width;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+     
       //marginTop: StatusBar.currentHeight || 0,
+    },
+    headerBar:{
+        flexDirection:'row',
+        paddingHorizontal:'5%',
+        paddingVertical:'2%',
     },
     image: {
         width:(ScreenWidth/3.2),
@@ -170,7 +189,7 @@ const styles = StyleSheet.create({
     },
     text:{
         fontFamily:"Cochin",
-        fontSize:15,
+        fontSize:18,
         color:"blue",
         //borderWidth:1,
         //alignItems: 'flex-end',

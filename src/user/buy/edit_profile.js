@@ -4,7 +4,7 @@ import {
     TouchableWithoutFeedback
 } from 'react-native';
 
-import { styles } from "../../styles/login/signup";
+import { styles } from "../../styles/login/edit_profile";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -19,6 +19,10 @@ class EditProfile extends Component {
 
     constructor(props) {
         super(props);
+        //포커스를 위한 변수
+        this.confirmpasswordRef = React.createRef();
+        this.confirmpasswordokRef = React.createRef();
+
         this.passwordRef = React.createRef();
         this.passwordokRef = React.createRef();
 
@@ -31,13 +35,21 @@ class EditProfile extends Component {
         this.loginInfo = { companyNo: null, passwd: null }
 
         this.state = {
-            modal:true,
-            
             validForm: false, //유효성
+            modal: true,
+
+            passwderror: false,
+            userpasswd: '',
+            userpasswdok: '',
+
             companyNo: '',
             passwd: '',
             passwordok: '',
+
             cardPopupMenuVisible: false,  //명함 팝업메뉴
+            cardImageDetailVisible:false,
+            companyImageDetailVisible:false,
+
             companyNoImageURL: null,
             cardImageURL: null,
 
@@ -46,18 +58,19 @@ class EditProfile extends Component {
 
     componentDidMount() {
         this.getLoginInfo().then((value) => {
+            this.loginInfo.companyNo=value.companyNo;
             this.loginInfo.userID = value.id;
             this.loginInfo.passwd = value.passwd;
-            this.setState({companyNo:value.companyNo})
+            this.setState({ companyNo: value.companyNo ,value:value})
             console.log(this.state.companyNo)
-            this.callGetCompanyImage().then((response) => {
+            this.callGetCompanyImage(this.loginInfo).then((response) => {
                 let reader = new FileReader();
                 reader.readAsDataURL(response);
                 reader.onloadend = () => {
                     this.setState({ companyNoImageURL: reader.result });
                 }
             });
-            this.callGetNamecardImage().then((response) => {
+            this.callGetcardImage(this.loginInfo).then((response) => {
                 let reader = new FileReader();
                 reader.readAsDataURL(response);
                 reader.onloadend = () => {
@@ -65,14 +78,14 @@ class EditProfile extends Component {
                 }
             });
         });
-        
+
     }
 
     //사업자등록증 사진을 가져오는 API
-    async callGetCompanyImage() {
+    async callGetCompanyImage(loginInfo) {
         let manager = new WebServiceManager(Constant.serviceURL + "/GetCompanyImage", "post");
         manager.addFormData("data", {
-            userID: this.loginInfo.userID, passwd: this.loginInfo.passwd, id: 2
+            userID: loginInfo.userID, passwd: loginInfo.passwd, id: 2
         });
         //id는 나중에 열람하고자 하는 사용자 id로 바뀌어야함 
         let response = await manager.start();
@@ -82,10 +95,10 @@ class EditProfile extends Component {
     }
 
     //명함 사진을 가져오는 API
-    async callGetNamecardImage() {
+    async callGetcardImage(loginInfo) {
         let manager = new WebServiceManager(Constant.serviceURL + "/GetNamecardImage", "post");
         manager.addFormData("data", {
-            userID: this.loginInfo.userID, passwd: this.loginInfo.passwd, id: 2
+            userID: loginInfo.userID, passwd: loginInfo.passwd, id: 2
         });
         //id는 나중에 열람하고자 하는 사용자 id로 바뀌어야함 
         let response = await manager.start();
@@ -106,10 +119,39 @@ class EditProfile extends Component {
         }
     }
 
-    //명함 버튼 클릭
-    clickPhotoButton = () => {
-        this.setState({ photoPopupMenuVisiable: true })
+    
+    //수정완료 버튼을 눌렀을 때
+    goImageUpload=()=> {
+        this.callModifyUserAPI().then((response)=> {
+            console.log('response message =',response);
+            if(response.success== "1"){
+                const obj = {          
+                    companyNo: this.loginInfo.companyNo,
+                    id: this.loginInfo.userID,
+                    passwd: this.state.passwd, 
+                }
+                AsyncStorage.setItem('obj', JSON.stringify(obj));
+                Alert.alert('정보 수정 완료', '', [
+                    { text: '확인', onPress: () => { this.props.navigation.navigate("Home") } },
+                ]);
+            }
+            else{
+                Alert.alert('정보 수정을 실패하였습니다.');
+            }
+        })
     }
+
+    //명함사진과 비밀번호를 수정하는 API
+    async callModifyUserAPI() {
+        let manager = new WebServiceManager("http://203.241.251.177/wparts/ModifyUser","post");
+        const formData = {userID:this.loginInfo.userID,passwd:this.state.passwd};        
+        manager.addFormData("data",formData);
+        manager.addBinaryData("file1",{uri:this.state.cardImageURL,type:"image/jpeg",name:"file1"});
+        let response = await manager.start();
+        if(response.ok)
+            return response.json();
+    }
+
     //명함 사진 URL
     cardImageInfo = (cardImageURI) => {
         this.setState({ cardImageURL: cardImageURI });
@@ -119,12 +161,10 @@ class EditProfile extends Component {
 
     // 명함 카메라로 이동
     goPhotoCameraScreen = () => {
-        this.setState({ photoPopupMenuVisiable: false });
         this.props.navigation.navigate('BusinessCardCamera', { onResultListener: this.cardImageInfo });
     }
     // 명함 갤러리로 이동
     goPhotoGalleryScreen = () => {
-        this.setState({ photoPopupMenuVisiable: false });
         this.props.navigation.navigate('PhotoGallery', { onResultListener: this.cardImageInfo })
     }
 
@@ -134,7 +174,7 @@ class EditProfile extends Component {
         this.imageLength--;
         this.onValueChange();
     }
- 
+
     //유효성 검사
     onValueChange = () => {
         let isValidForm = true;
@@ -160,12 +200,38 @@ class EditProfile extends Component {
         })
     }
 
-    modal=()=>{
+    //현재비밀번호 확인버튼 클릭 시
+    passwdOkButtonClicked = () => {
+        if (this.state.userpasswd === this.loginInfo.passwd && this.state.userpasswdok === this.loginInfo.passwd) {
             this.setState({
-              modal: !this.state.modal
+                modal: !this.state.modal
             });
-          
+        }
+        else {
+            this.setState({ passwderror: true })
+        }
     }
+
+    //명함 자세히보기
+    cardImageModal=()=>{
+        this.setState({
+            cardImageDetailVisible: !this.state.cardImageDetailVisible
+        });
+    }
+
+    //사업자등록증 사진 자세히보기 
+    companyImageModal=()=>{
+        this.setState({
+            companyImageDetailVisible: !this.state.companyImageDetailVisible
+        });
+    }
+
+    //취소버튼 클릭 시 마이페이지로 이동
+    goMypage = () => {
+        this.props.navigation.pop();
+    }
+
+
 
     render() {
         return (
@@ -175,9 +241,46 @@ class EditProfile extends Component {
                     transparent={false}
                     visible={this.state.modal}
                 >
-                    <TouchableOpacity onPress={this.modal}><Text>확인 </Text></TouchableOpacity>
+                    <View style={styles.container}>
+                        <View style={styles.header_textLayout_view}>
+                            <Text style={[styles.default_text, styles.main_title_text, { color: '#4B89DC' }]}>비밀번호 확인</Text>
+                            <Text style={[styles.default_text, styles.login_guide_text]}>정보 수정을 위해 현재 비밀번호를 입력해주세요.</Text>
+                        </View>
+                        <View style={{ flex: 7 }}>
+                            <View style={styles.textInput_view}>
+                                <Text>비밀번호</Text>
+                                <TextInput
+                                    ref={(c) => { this.confirmpasswordRef = c; }}
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => { this.confirmpasswordokRef.focus(); }}
+                                    onChangeText={(value) => this.setState({ userpasswd: value })}
+                                    secureTextEntry={true}
+                                />
+                            </View>
+                            <View style={styles.textInput_view}>
+                                <Text>비밀번호 확인</Text>
+                                <TextInput
+                                    ref={(c) => { this.confirmpasswordokRef = c; }}
+                                    onChangeText={(value) => this.setState({ userpasswdok: value })}
+                                    secureTextEntry={true}
+                                />
+                            </View>
+                            {this.state.passwderror == true ? (
+                                <Text style={styles.errorMessage_text}>
+                                    * 비밀번호를 정확하게 입력해주세요.
+                                </Text>
+                            ) : null}
+                            <View style={{ flexDirection: 'row', marginTop: "3%" }}>
+                                <TouchableOpacity activeOpacity={0.8} style={styles.editprofile_btn} onPress={this.goMypage}>
+                                    <Text style={[styles.default_text, styles.signup_btn_text]}>취소</Text></TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.8} style={[styles.editprofile_btn, { marginLeft: "2%" }]} onPress={this.passwdOkButtonClicked}>
+                                    <Text style={[styles.default_text, styles.signup_btn_text]}>확인</Text></TouchableOpacity>
+
+                            </View>
+                        </View>
+                    </View>
                 </Modal>
-               
+
                 <View style={styles.total_container}>
                     <ScrollView
                         onScroll={event => {
@@ -186,33 +289,60 @@ class EditProfile extends Component {
                     >
                         <View style={styles.container}>
                             <View style={styles.header_textLayout_view}>
-                                <Text style={[styles.default_text, styles.main_title_text]}>필수 항목 첨부</Text>
-                                <Text style={[styles.default_text, styles.login_guide_text]}>서비스 이용을 위해 아래의 항목을 첨부해주세요.</Text>
-                                <Text style={[styles.default_text, styles.login_guide_text]}>등록한 사업자 등록증과 명함 확인 후 승인이 완료됩니다.</Text>
+                                <Text style={[styles.default_text, styles.main_title_text]}>내정보 수정</Text>
+                                <Text style={[styles.default_text, styles.login_guide_text]}>수정을 위해 아래의 항목을 첨부해주세요.</Text>
                             </View>
                             <View style={styles.imageRegister_btnLayout_view}>
+                                {/*사업자 등록증 사진*/}
                                 <View style={styles.imageRegister_btn_view}>
                                     <Text style={[styles.default_text, styles.imageRegister_title_text]}>사업자 등록증</Text>
-                                    <TouchableOpacity style={styles.imageRegister_btn}>
+                                    <TouchableOpacity style={styles.imageRegister_btn} onPress={this.companyImageModal}>
                                         <Image source={{ uri: this.state.companyNoImageURL }} style={styles.imageRegister_image_view} />
                                     </TouchableOpacity>
                                 </View>
+                                {/*명함 사진*/}
                                 <View style={styles.imageRegister_btn_view}>
                                     <Text style={[styles.default_text, styles.imageRegister_title_text]}>명함</Text>
                                     <View onLayout={(event) => { this.getViewSize(event) }} ref={this.photoCameraIcon}>
                                         {this.state.cardImageURL == "" ?
-                                           (<TouchableOpacity style={styles.imageRegister_btn} onPress={() => this.setState({ cardPopupMenuVisible: true })}>
+                                            (<TouchableOpacity style={styles.imageRegister_btn} onPress={() => this.setState({ cardPopupMenuVisible: true })}>
                                                 <IconCamera name="image-inverted" size={60}></IconCamera>
-                                            </TouchableOpacity>): (<TouchableOpacity style={styles.imageRegister_btn}>
-                                                <Image source={{uri: this.state.cardImageURL }} style={styles.imageRegister_image_view} />
+                                            </TouchableOpacity>) : (<TouchableOpacity style={styles.imageRegister_btn} onPress={this.cardImageModal}>
+                                                <Image source={{ uri: this.state.cardImageURL }} style={styles.imageRegister_image_view} />
                                                 <TouchableOpacity style={styles.imageDelete_btn} onPress={this.photoRemoveClicked}>
                                                     <IconDelete name="close-circle" color="black" size={27}></IconDelete>
                                                 </TouchableOpacity>
-                                            </TouchableOpacity>) 
+                                            </TouchableOpacity>)
                                         }
                                     </View>
                                 </View>
                             </View>
+
+                            {/*명함 사진 자세히보기*/}
+                            <Modal
+                                visible={this.state.cardImageDetailVisible}
+                            >
+                                <View style={[styles.total_container,{alignItems:'center',justifyContent:'center'}]}>
+                                    <TouchableOpacity onPress={this.cardImageModal} style={{ backgroundColor: '#fff', }}>
+                                        <Text style={{fontSize:20}}>x</Text>
+                                    </TouchableOpacity>
+                                        <Image source={{ uri: this.state.cardImageURL }} style={{ width: "80%", height: "80%" }} />
+                                    
+                                </View>
+                            </Modal>
+
+                            {/*사업자등록증 사진 자세히보기*/}
+                            <Modal
+                                visible={this.state.companyImageDetailVisible}
+                            >
+                                <View style={[styles.total_container,{alignItems:'center',justifyContent:'center'}]}>
+                                    <TouchableOpacity onPress={this.companyImageModal} style={{ backgroundColor: '#fff', }}>
+                                        <Text style={{fontSize:20}}>x</Text>
+                                    </TouchableOpacity>
+                                        <Image source={{ uri: this.state.companyNoImageURL }} style={{ width: "80%", height: "80%" }} />
+                                    
+                                </View>
+                            </Modal>
 
                             {/*명함모달*/}
                             <Modal
@@ -229,7 +359,7 @@ class EditProfile extends Component {
                             <View style={styles.textInputLayout_view}>
                                 <View style={styles.textInput_view}>
                                     <Text>사업자 등록번호</Text>
-                                    <Text style={{marginTop:"2%",fontSize:15}}>{this.state.companyNo.slice(0, 3)}-{this.state.companyNo.slice(3, 5)}-{this.state.companyNo.slice(5, 10)}</Text>
+                                    <Text style={{ marginTop: "2%", fontSize: 15 }}>{this.state.companyNo.slice(0, 3)}-{this.state.companyNo.slice(3, 5)}-{this.state.companyNo.slice(5, 10)}</Text>
                                 </View>
 
                                 <View style={styles.textInput_view}>
@@ -257,7 +387,7 @@ class EditProfile extends Component {
                         </View>
                     </ScrollView>
                     {this.state.validForm ?
-                        (<TouchableOpacity activeOpacity={0.8} style={[styles.default_btn, styles.enable_btn]} onPress={this.upload}>
+                        (<TouchableOpacity onPress={this.goImageUpload} activeOpacity={0.8} style={[styles.default_btn, styles.enable_btn]}>
                             <Text style={[styles.default_text, styles.signup_btn_text]}>수정완료</Text></TouchableOpacity>)
                         : (<TouchableOpacity activeOpacity={0.8} style={[styles.default_btn, styles.disable_btn]}>
                             <Text style={[styles.default_text, styles.signup_btn_text]}>수정완료</Text>

@@ -4,6 +4,7 @@ import { View, FlatList, StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //마이페이지
+import MyPage from "../user/mypage";
 import SalesList from "../user/sales/sales_list";
 import BuyList from "../user/buy/buy_list";
 import PickList from "../user/buy/pick_list";
@@ -73,6 +74,8 @@ class Stack extends Component {
                 <NativeStack.Screen name="PartsNoCamera" component={PartsNoCamera}
                     options={{ title: "" }} />
 
+                <NativeStack.Screen name="MyPage" component={MyPage}
+                    options={{ title: "" , headerShown:false}}/>
                 <NativeStack.Screen name="EditProfile" component={EditProfile}
                     options={{ title: "" }}/>
                 <NativeStack.Screen name="SalesList" component={SalesList}
