@@ -8,7 +8,7 @@ import Constant from "../../../util/constatnt_variables";
 import WebServiceManager from "../../../util/webservice_manager";
 import { styles } from "../../../styles/list/home";
 
-import IconRadio from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import ListItem from './item';
 
@@ -30,7 +30,9 @@ class Home extends Component {
             goodsContent: [],
             indicator : false,
             recentRadioButtonChecked:true,
-            abcRadioButtonChecked:false
+            abcRadioButtonChecked:false,
+
+            goodsQuantity:null,
             
         };
     }
@@ -102,12 +104,14 @@ class Home extends Component {
 
     //부품 목록 호출 메서드
     goGetGoods = () => {
+        
         console.log('refresh_home');
         this.setState({indicator : true});
         this.callGetGoodsAPI().then((response) => {
             this.contents = response;
-            //console.log(response);//response는 json자체
-            this.setState({indicator:false,goodsContent:response});
+            const goodsQuantity = Object.keys(response).length;
+            console.log("상품 총 갯수 :" ,goodsQuantity);//response는 json자체
+            this.setState({indicator:false,goodsContent:response,goodsQuantity:goodsQuantity});
         });
         console.log('refresh success')
         this.setState({ refreshing: false })
@@ -184,7 +188,7 @@ class Home extends Component {
 
 
     render() {
-        const Header_Maximum_Height = 120;
+        const Header_Maximum_Height = 180;
         const Header_Minimum_Height = 60;
 
         const renderHeader = this.AnimatedHeaderValue.interpolate(
@@ -205,9 +209,9 @@ class Home extends Component {
                 <Modal transparent={true} visible={this.state.indicator}>
                     <Indicator/>
                 </Modal>
-                <View style={{ flex: 1, backgroundColor:'white' }}>  
+                <View style={{ flex:1, backgroundColor:'#FFFF' }}>  
                     <FlatList
-                        //style={styles.goodsContent_view}
+                    
                         data={this.state.goodsContent}
                         renderItem={({ item , index }) => <ListItem index={index} item={item} id={item.id} navigation={this.props.navigation} refreshListener={this.goGetGoods} />}
                         refreshing={this.state.refreshing} //새로고침
@@ -220,11 +224,12 @@ class Home extends Component {
                     />
 
                     <Animated.View style={[styles.homeTop_view, { transform: [{ translateY: renderHeader }] }]}>
-                        <ImageBackground source={require('../../../images/background/main-background/main-background.png')} style={{ width: "100%", height: "100%" }}>
+                        <View style={{ width: "100%", height: "100%" }}>
                             <View style={styles.title_view}>
+                               
                                 <View style={styles.row_view}>
                                     <Text style={[styles.title_text, styles.titleBold_text]}>
-                                        손 쉽게 검색
+                                        손쉽게 검색
                                     </Text>
                                     <Text style={[styles.title_text, styles.titleRegular_text]}>
                                         하고
@@ -240,22 +245,27 @@ class Home extends Component {
 
                                 </View>
                                 <Text style={styles.description_text}>
-                                    원하는 키워드, 품번 사진으로 바로 검색 가능합니다.
+                                    원하는 키워드, 품번 사진으로 {'\n'} 바로 검색 가능합니다.
                                 </Text>
                             </View>
-                        </ImageBackground>
+                        </View>
                     </Animated.View>
 
                     <Animated.View style={[styles.searchBar_view, { height: Header_Minimum_Height, transform: [{ translateY: renderSearchBar }] }]}>
-                        <ImageBackground source={require('../../../images/background/main-background/main-background.png')} style={styles.background_image}>
-                            <TextInput
-                                onChange={(value) => this.search(value.nativeEvent.text)}
-                                placeholder="품명을 입력해주세요"
-                                placeholderTextColor="light grey"
-                                style={styles.search_input}
-                                value={this.state.number}
-                            />
-                            {/* 카메라로 검색 */}
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={styles.searchSection}>
+                                <Icon style={{padding:10}} name="search" size={20} color="#000" />
+                                <TextInput
+                                    onChange={(value) => this.search(value.nativeEvent.text)}
+                                    placeholder="검색어를 입력해주세요."
+                                    placeholderTextColor="light grey"
+                                    style={styles.search_input}
+                                    value={this.state.number}
+                                />
+                                {/* 카메라로 검색 */}
+
+                            </View>
+                            <View style={{marginBottom:'1%'}}>
                             <TouchableOpacity
                                 style={styles.cameraSearch_button}
                                 onPress={this.goCameraButtonClicked}>
@@ -263,14 +273,18 @@ class Home extends Component {
                                     source={require('../../../images/icon/camera-icon/camera-icon.png')}
                                 />
                             </TouchableOpacity>
-                        </ImageBackground>
+                            </View>
+                        </View>
                         <View style={styles.sortBar_view}>
+                            <View style={{flex:1,marginLeft:'5%'}}>
+                                <Text>총 상품 갯수 : {this.state.goodsQuantity} 개</Text>
+                            </View>
                                 <TouchableOpacity style={styles.row_view} activeOpacity={0.8} onPress={this.dateSort}>
-                                    <IconRadio name={this.state.recentRadioButtonChecked ? "check-circle" : "panorama-fish-eye"} size={20} color={'blue'} />
+                                    <Icon name={this.state.recentRadioButtonChecked ? "check-circle" : "panorama-fish-eye"} size={20} color={'blue'} />
                                         <Text style={styles.sortBar_text}> 최신순  </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.row_view} activeOpacity={0.8} onPress={this.abcSort}>
-                                    <IconRadio name={this.state.abcRadioButtonChecked ? "check-circle" : "panorama-fish-eye"} size={20} color={'blue'}  />
+                                    <Icon name={this.state.abcRadioButtonChecked ? "check-circle" : "panorama-fish-eye"} size={20} color={'blue'}  />
                                     <Text style={styles.sortBar_text}> 가나다순</Text>
                                 </TouchableOpacity>   
                         </View>

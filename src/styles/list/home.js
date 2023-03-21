@@ -7,11 +7,11 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
   homeTop_view: { //홈의 위의 디자인 담당
     width: "100%",
     height: 200,
-    backgroundColor: '#0076D1',
+    backgroundColor: '#113AE2',
     position: 'absolute',
   },
   title_view: { 
-    marginTop:10,
+    marginTop:"8%",
     padding:20,
   },
     
@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
     flexDirection: 'row',
   },
   title_text: {
-    fontSize: 20,
+    fontSize: 25,
     lineHeight: 30,
   },
   titleRegular_text: {
@@ -43,27 +43,29 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
     width: "100%",
     position: 'absolute',
     alignItems: 'center',
-    backgroundColor: "#1E90FF",
-    borderwidth:5,
+    backgroundColor: "#113AE2",
+  
   },
-  background_image:{
-    width: "100%",
-    height: "100%", 
-    flexDirection: 'row'
+  searchSection:{
+    marginTop:'1%',
+    borderRadius:10,
+    width:'75%',
+    height:'80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+
   },
   search_input: { //Home TextInput 안에 글씨
+    flex:1,
     backgroundColor: 'white',
-    width: "80%",
-    marginLeft: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
+    paddingLeft:0,
+    borderRadius:10,
     fontSize: 14,
-    marginTop: 5,
-    marginBottom: 5,
   },
   cameraSearch_button: { //공통사용
-    marginTop:5,
+
     marginLeft: 10,
     width: 54,
     height: 54,
@@ -79,7 +81,7 @@ export const styles = StyleSheet.create({ //export를 해주어야 다른 곳에
     width:"100%",
     paddingVertical:"1%",
     paddingRight:"4%",
-    justifyContent:'flex-end',
+    
     flexDirection:'row',
     paddingTop:5
   },
