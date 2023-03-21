@@ -121,7 +121,19 @@ export default class DetailItemView extends Component {
     }
 
     backPressed = () => {
-        this.props.navigation.pop();
+        if(this.state.editGoodsViewVisible==true){
+            Alert.alert(
+                '',
+                '수정을 취소 하시겠어요?',
+                [
+                    { text: '취소', onPress: () => console.log('Cancel Pressed') },
+                    { text: '확인', onPress: () => this.props.navigation.pop() },
+                ],);
+        }
+        else{
+            this.props.navigation.pop();
+        }
+        
         if(this.props.route.params.pickRefreshListener !=null){
             this.props.route.params.pickRefreshListener();
         }
@@ -213,6 +225,11 @@ export default class DetailItemView extends Component {
     genuineValueText = (value) => {
         let genuineText = ["정품", "비정품"];
         return genuineText[value - 1];
+    }
+
+    //부품번호에 대한 Goodle 검색창 보이기(Web View)
+    goGoodsNumberWebView=()=> {
+        this.props.navigation.navigate('GoogleWebView',{url:'http://www.google.com/search?q='+this.state.item.number});
     }
 
 
@@ -442,6 +459,8 @@ export default class DetailItemView extends Component {
         else
             Promise.reject(response);
     }
+
+
     render() {
         console.log("renderItem_hashTag", this.state.hashTag);
         const { name, number,quantity,spec, price,genuine, hashTag, quality, valid } = this.state.item;
@@ -512,8 +531,8 @@ export default class DetailItemView extends Component {
                         </View>
                         
                         {/* 이미지 모달 */}
-                        <Modal visible={this.state.imageVisible}>
-                            <Button title="Back" onPress={this.handleModal} />
+                        <Modal visible={this.state.imageVisible} onRequestClose={()=>this.setState({imageVisible:!this.state.imageVisible})}>
+                            {/*<Button title="Back" onPress={this.handleModal} />*/}
                             <View style={styles.goods_modal_view}>
                                 <FlatList
                                     showsHorizontalScrollIndicator={false}
@@ -536,9 +555,11 @@ export default class DetailItemView extends Component {
                                 <Text style={[styles.text, { fontSize: 24, }]}>
                                     {name}
                                 </Text>
-                                <Text style={[styles.text, { paddingLeft: '5%', color: 'blue' }]}>
-                                    {number}
-                                </Text>
+                                <TouchableOpacity onPress={this.goGoodsNumberWebView}>
+                                    <Text style={[styles.text, { paddingLeft: '5%', color: 'blue' }]}>
+                                        {number}
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
 
                             {/* 금액 */}

@@ -5,7 +5,7 @@ export default class LogisWeb extends Component {
     constructor(props) {
         super(props);
         console.log(this.props.route.params.logisInfo);
-        this.apiKey="3O682C4rWjqSJ8BVk1i8xw";
+        this.apiKey="3LJ8cI2G0mSsKhGzRgAWCw";
         this.code=this.props.route.params.logisInfo.code;
         this.invoice=this.props.route.params.logisInfo.invoice;
     }

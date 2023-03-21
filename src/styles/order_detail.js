@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
         paddingVertical:10,
         paddingHorizontal:10,
         justifyContent:'center',
-        flexDirection:'row'
+        //flexDirection:'row'
     },
     title_view:{
         flex:1,

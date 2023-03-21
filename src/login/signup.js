@@ -53,16 +53,6 @@ class SignUp extends Component {
         //BackHandler.removeEventListener("hardwareBackPress", this.backPressed);
     }
 
-    keyboardDidShow = () => {
-        console.log('Keyboard Shown');
-    }
-
-    keyboardDidHide = () => {
-        console.log('Keyboard Hide');
-        this.onValueChange();
-    }
-
-
     makeBinaryData() {
         let imageData = []; 
             //사업자등록번호
@@ -227,6 +217,15 @@ class SignUp extends Component {
             this.modalPhotoCameraY=py+height-(height/10);
            // console.log('location:',fx,fy,width,height,px,py)
         })
+    }
+
+    keyboardDidShow = () => {
+        console.log('Keyboard Shown');
+    }
+
+    keyboardDidHide = () => {
+        console.log('Keyboard Hide');
+        this.onValueChange();
     }
 
     render() {

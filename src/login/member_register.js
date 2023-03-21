@@ -123,6 +123,7 @@ class Login extends Component {
     loginButtonClicked = () => { // 로그인 버튼 눌렀을 때 호출되는 함수
         this.loginInfo.companyNo = this.state.companyNo;
         this.loginInfo.passwd = this.state.passwd;
+        
         this.callLoginAPI(this.loginInfo).then((response) => {
             if (response.id == "0") { //회원정보가 없을 경우 
                 //this.passwordRef.clear();
@@ -140,6 +141,7 @@ class Login extends Component {
                 AsyncStorage.setItem('obj', JSON.stringify(obj));
                 console.log(response);
                 this.props.navigation.navigate('TabHome');
+                this.setState({passwd:'',companyNo:''});
             }
         })
     }
@@ -199,6 +201,7 @@ class Login extends Component {
                                         onChangeText={(value) => this.setState({ passwd: value })}
                                         onEndEditing={(event) => this.onValueChange()}
                                         secureTextEntry={true}
+                                        value={this.state.passwd}
                                     />
                                 </View>
                                 <View style={{ flexDirection: 'row', marginTop: "-5%" }}>

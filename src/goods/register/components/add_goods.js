@@ -73,39 +73,16 @@ class AddGoods extends Component {
     }
 
     componentDidMount() {
-
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
         this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
 
         this.getuserID().then((value) => {
             this.id=value;
         });
-       
     }
     componentWillUnmount() {
         this.keyboardDidShowListener.remove();
         this.keyboardDidHideListener.remove();
-    }
-
-    keyboardDidShow = () => {
-        console.log('Keyboard Shown');
-    }
-
-    keyboardDidHide = () => {
-        console.log('Keyboard Hide');
-        this.onValueChange();
-    }
-
-    // userID값 가져오는 함수
-    async getuserID() {// getUserID 로 수정
-        let obj = await AsyncStorage.getItem('obj') // 접속 중인 세션, 로컬스토리지 세션 따로생각, 로그인확인방법check
-        let parsed = JSON.parse(obj);
-        if (obj !== null) {
-            return this.id=parsed.id;
-        }
-        else {
-            return false;
-        }
     }
 
     makeBinaryData() {
@@ -123,7 +100,7 @@ class AddGoods extends Component {
         return imageData; // 객체가 들어있는 배열을 리턴
     }
 
-    upload = () => { // 등록 버튼을 눌렀을 때 호출되는 함수
+    uploadButtonClicked = () => { // 등록 버튼을 눌렀을 때 호출되는 함수
         const imageData = this.makeBinaryData();
         this.callUploadAPI(imageData).then((response) => {
             console.log(response);
@@ -170,11 +147,6 @@ class AddGoods extends Component {
         //this.setState({ imageURLs: this.state.imageURLs.concat(imageURLs) });   
     }
 
-    // 품번카메라로 이동 goCameraButtonClicked
-    goCameraButtonClicked = () => {
-        this.props.navigation.push("PartsNoCamera", { onResultListener: this.goPartsNo });
-    }
-
     // 품번 가지고오는 함수 getGoodsNo
     goPartsNo = (imageURI) => {
         this.callPartsNoAPI(imageURI).then((response) => {
@@ -205,10 +177,13 @@ class AddGoods extends Component {
         this.setState({ cameraPopupMenuVisiable: false });
         this.props.navigation.navigate("Gallery", { onResultListener: this.getImageURL, imageLength: this.state.imageURLs.length });
     }
+    // 품번카메라로 이동 goCameraButtonClicked
+    goCameraButtonClicked = () => {
+        this.props.navigation.push("PartsNoCamera", { onResultListener: this.goPartsNo });
+    }
 
     //해시태그 추가버튼을 누를때
     addTag = () => {
-        
         const tagNames=this.state.tagName.split(' ');
     
         if(tagNames.slice(-1)[0]==''){
@@ -227,13 +202,25 @@ class AddGoods extends Component {
         this.state.tagName = ""
         this.hashTagRef.clear();
     }
-
+    //해시태그 특수문자 입력시 제거
     hashTagOnChangeText=(value)=>{
         const reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/;
         let newTagName=value.replace(reg,'')
         this.setState({ tagName: newTagName})
     }
-    
+
+    // userID값 가져오는 함수
+    async getuserID() {// getUserID 로 수정
+        let obj = await AsyncStorage.getItem('obj') // 접속 중인 세션, 로컬스토리지 세션 따로생각, 로그인확인방법check
+        let parsed = JSON.parse(obj);
+        if (obj !== null) {
+            return this.id = parsed.id;
+        }
+        else {
+            return false;
+        }
+    }
+
     async addHashTag(tagNames){
         this.setState({ hashTag: this.state.hashTag.concat(tagNames) })
     }
@@ -243,11 +230,13 @@ class AddGoods extends Component {
             hashTag: this.state.hashTag.filter((_, indexNum) => indexNum !== index),
         })
     }
+
     async removeImage(index) {
         this.setState({
             imageURLs: this.state.imageURLs.filter((value, indexNum) => indexNum !== index)
         });
     }
+
     //해시태그 삭제할 때
     hashTagRemove = (index) => {
         this.removeHashTag(index).then(()=>{
@@ -276,13 +265,11 @@ class AddGoods extends Component {
 
     //이미지 삭제 버튼
     imageRemove = (index) => {
-        
         this.removeImage(index).then(()=>{
             this.onValueChange();
         })
-       
-        
     };
+
     //상품등록하기 버튼활성화 조건
     onValueChange = () => {
         let isValidForm = true;
@@ -381,6 +368,15 @@ class AddGoods extends Component {
             ],
             { cancelable: false });
         return true;
+    }
+
+    keyboardDidShow = () => {
+        console.log('Keyboard Shown');
+    }
+
+    keyboardDidHide = () => {
+        console.log('Keyboard Hide');
+        this.onValueChange();
     }
 
     render() {
@@ -608,7 +604,7 @@ class AddGoods extends Component {
                         </View>
                         {this.state.goodsDetailModal && (<GoodsDetailModal name={this.state.name} number={this.state.number} price={this.state.price} hashTag={this.state.hashTag}
                             quantity={this.state.quantity} quality={this.state.quality} genuine={this.state.genuine} spec={this.state.spec} statemodal={this.state.goodsDetailModal}
-                            setstatemodal={() => this.setState({ goodsDetailModal: !this.state.goodsDetailModal })} upload={this.upload} />)}
+                            setstatemodal={() => this.setState({ goodsDetailModal: !this.state.goodsDetailModal })} upload={this.uploadButtonClicked} />)}
 
                         {/* 상품 등록하기 버튼 부분*/}
                         {this.state.validForm ?
@@ -713,30 +709,48 @@ class GoodsDetailModal extends Component {
     constructor(props) {
         super(props);
     }
+    qulityValueText = (value) => {
+        let qulityText = ["새제품이에요", "깨끗해요", "쓸만해요"];
+        return qulityText[value - 1];
+    }
+
+    genuineValueText = (value) => {
+        let genuineText = ["정품", "비정품"];
+        return genuineText[value - 1];
+    }
     render() {
         return (
             <>
                 <Modal animationType='slide' transparent={true} visible={this.props.statemodal}>
                     <View style={[styles.center_view,{marginTop:22}]}>
                         <View style={styles.modal_search_view}>
-                            <TouchableOpacity onPress={this.props.setstatemodal}>
-                                <Text>X</Text>
-                            </TouchableOpacity>
-                            <Text style={styles.btn_text}>
-                                {"품명 : "}{this.props.name}{"\n"}
-                                {"부품번호 : "}{this.props.number}{"\n"}
-                                {"가격 : "}{this.props.price}{"\n"}
-                                {"해시태그 : "}{this.props.hashTag + " "}{"\n"}
-                                {"판매개수 : "}{this.props.quantity}{"\n"}
-                                {"상품상태 : "}{this.props.quality}{"\n"}
-                                {"정품/비정품 : "}{this.props.genuine}{"\n"}
-                                {"상품설명 : "}{this.props.spec}{"\n"}
-                                {" 등록 하시겠습니까? "}
-                            </Text>
-                            <TouchableOpacity onPress={this.props.upload}>
-                                <IconPopup name="check" size={35} color="black" />
+                            <Text style={{fontFamily: 'Pretendard-SemiBold',fontSize: 20,color:'black'}}>등 록 확 인{"\n"}</Text>
 
-                            </TouchableOpacity>
+                            <View style={{flexDirection:'row', marginBottom:'13%'}}>
+                                <View style={{flex:1}}>
+                                    <Text style={[styles.modal_text,]}>품        명</Text>
+                                    <Text style={[styles.modal_text,]}>부품번호</Text>
+                                    <Text style={[styles.modal_text,]}>가        격</Text>
+                                    <Text style={[styles.modal_text,]}>판매개수</Text>
+                                    <Text style={[styles.modal_text,]}>상품상태</Text>
+                                    <Text style={[styles.modal_text,]}>정품/비정품</Text>            
+                                </View>
+                                <View style={{flex:1}}>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.props.name.length>7 ? `${this.props.name.slice(0,7)}...`:this.props.name}</Text>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.props.number.length>9 ? `${this.props.number.slice(0,9)}...`:this.props.number}</Text>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.props.price}</Text>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.props.quantity}</Text>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.qulityValueText(this.props.quality)}</Text>
+                                    <Text style={[styles.modal_text,{color:'black'}]}>{this.genuineValueText(this.props.genuine)}</Text>
+                                </View>
+                            </View>
+
+
+                            <Text style={[styles.modal_text,{color:'black'}]}>{" 등록 하시겠습니까? "}</Text>
+                            <View style={{flexDirection:'row', marginVertical:'3%'}}>
+                                <TouchableOpacity  style={styles.modal_button} onPress={this.props.setstatemodal}><Text style={{color:'black'}}>취소</Text></TouchableOpacity>
+                                <TouchableOpacity style={[styles.modal_button,{backgroundColor:'#1E90FF'}]} onPress={this.props.upload}><Text style={{color:'white'}}>확인</Text></TouchableOpacity>
+                            </View>                      
                         </View>
                     </View>
                 </Modal>

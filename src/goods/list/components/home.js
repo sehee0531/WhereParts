@@ -83,7 +83,8 @@ class Home extends Component {
         this.callPartsNoAPI(imageURI).then((response)=> {
             if(response.success==="1") {
                 const partsNo = response.texts[0].replaceAll(" ","");
-                this.setState({ number: partsNo });
+                
+                this.search(partsNo);
             }
             else {                
                 Alert.alert('부품번호 인식', '부품번호를 인식하지 못했습니다. 직접 입력하세요', [

@@ -20,8 +20,6 @@ class AddDelivery extends Component {
             t_invoice: "",
             imageURL: null,
             sellDetailInfo: { orderingDate: "", buyerTel: "", days: [""] },
-
-            validForm: false,
         }
     }
 
@@ -89,16 +87,6 @@ class AddDelivery extends Component {
         });
     }
 
-    onValueChange = () => {
-        let isValidForm = true;
-        
-        if (this.state.t_invoice.trim().length == 0) {
-            isValidForm = false;
-        }
-
-        this.setState({ validForm: isValidForm });
-    }
-
     async callGetSellDetailAPI() {
         let manager = new WebServiceManager(Constant.serviceURL + "/GetSellDetail?id=" + this.props.route.params.id);
         let response = await manager.start();
@@ -154,6 +142,7 @@ class AddDelivery extends Component {
        console.log(this.props.route.params.id)
        console.log(this.state.t_code);
        console.log("t_name",this.state.t_name[this.state.t_code-1]);
+       console.log('t_code',this.state.t_code)
         return (
 
             <View style={styles.total_container}>
@@ -221,7 +210,7 @@ class AddDelivery extends Component {
                     </View>
                 </ScrollView>
                 <View style={styles.bottomContainer}>
-                    {this.state.validForm ?
+                    {this.state.t_invoice.trim()!=0 ?
                         (<TouchableOpacity onPress={this.deliveryCompleteButtonClicked} activeOpacity={0.8} style={styles.okbtn} >
                             <Text style={styles.btn_text}>배송완료신청</Text>
                         </TouchableOpacity>)

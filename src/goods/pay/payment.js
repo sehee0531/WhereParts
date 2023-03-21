@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, NativeModules,Pressable, TextInput,Image,Keyboard, Alert } from 'react-native';
 
-import Address from "../../goods/pay/address";
-import { Picker } from '@react-native-picker/picker';
-
 import Constant from '../../util/constatnt_variables';
 import WebServiceManager from '../../util/webservice_manager';
 import { template } from "../../styles/template/page_style";
 import { styles } from "../../styles/payment";
+
 class Payment extends Component {
     constructor(props) {
         super(props);
@@ -136,17 +134,8 @@ class Payment extends Component {
             goodsID:id,
             quantity:this.state.quantity,
             price:price
-        };   
-        
-
-        console.log("결제정보",payload);
-
+        };        
         this.callAndroidPaymentActivity(payload);
-        //this.callAddOrderAPI(payload).then((response) => {
-        //    console.log("구매완료", response);
-        //});
-
-        //this.props.navigation.navigate("Home");
     }
 
     //안드로이 네이티브 결제 액티비티 호출
@@ -161,51 +150,44 @@ class Payment extends Component {
             console.log('data=',paymentData.data);            
             const addOrderData = this.getAddOrderData(paymentData)
             console.log('payment data=',addOrderData);
-            this.props.navigation.navigate('PayComplete',{result:addOrderData});
+            
+            this.callAddOrderAPI(addOrderData).then((response)=> {
+                console.log('addOrder response message',response);
+                this.props.navigation.navigate('PayComplete',{orderID:response.success});
+            });
         });
     }
 
     //AddOrder API호출에 필요한 데이터 생성
     getAddOrderData=(paymentData)=> {
         //const cardData = JSON.parse(paymentData.card_data);
+        const address = this.state.roadAddr+" "+this.state.detailAddress;
+        const {orderNo,quantity,buyerName,buyerTel,bigo} = this.state;
+        const {id,price} = this.item;
+
         const payload = {
-            orderNo:this.state.orderNo,
+            orderNo:orderNo,
             buyerID:this.userID,
-            goodsID:this.item.id,
-            quantity:this.state.quantity,
-            price:this.item.price,
-            total:paymentData.data.price,
-            buyerTel:this.state.buyerTel,
-            payKind:1,
+            goodsID:id,
+            quantity:quantity,
+            price:price,
+            //total:paymentData.data.price,
+            total:quantity*price,
+            buyerName:buyerName,
+            buyerTel:buyerTel,
+            payKind:paymentData.data.method_origin,
             payBank:paymentData.data.card_data.card_company,
-            address:this.state.roadAddr,
-            bigo:this.state.bigo,
+            address:address,
+            bigo:bigo,
             receiptID:paymentData.data.receipt_id,
             billURL:paymentData.data.receipt_url
-
         };
         return payload;
     }
 
-    async callAddOrderAPI(value){
+    async callAddOrderAPI(formData){
         let manager = new WebServiceManager(Constant.serviceURL+"/AddOrder", "post");
-
-        const payload = value;
-        console.log("payload", payload);
-        manager.addFormData("data", {
-            buyerID:payload.buyerID,
-            goodsID:payload.goodsID,
-            buyerName:payload.buyerName,
-            buyerTel:payload.buyerTel,
-            quantity:payload.quantity,
-            price:payload.price,
-            total:payload.total,
-            payKind:payload.payKind,
-            payBank:payload.payBank,
-            address:payload.address,
-            bigo:payload.bigo,
-        });
-
+        manager.addFormData("data",formData);
         let response = await manager.start();
         if (response.ok) {
             return response.json();

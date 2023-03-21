@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { WebView } from 'react-native-webview';
 
-class SearchWebView extends Component {
+class GoogleWebView extends Component {
     constructor(props) {
         super(props);
         this.url=this.props.route.params.url;
@@ -14,4 +14,4 @@ class SearchWebView extends Component {
     }
 }
 
-export default SearchWebView;
+export default GoogleWebView;

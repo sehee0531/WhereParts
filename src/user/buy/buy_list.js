@@ -81,8 +81,7 @@ class ListItem extends Component {
         this.callGetImageAPI().then((response) => {
             let reader = new FileReader();
             reader.readAsDataURL(response); //blob을 읽어줌 읽은 놈이 reader
-            reader.onloadend = () => {
-                
+            reader.onloadend = () => {                
                 this.setState({ imageURI: reader.result }) //base64를 imageURI에 집어넣어준다
 
             } //끝까지 다 읽었으면 
@@ -95,6 +94,7 @@ class ListItem extends Component {
                 return response.blob();
     }
     goDeliveryDetailScreen=()=>{
+        //임시 배송조회 가능(송장번호와 택배사는 이미 존재함)
         const logisInfo={code:"04",invoice:"651969374875"};
         this.props.navigation.navigate('DeliveryDetail',{logisInfo:logisInfo});
     }
@@ -173,9 +173,14 @@ class ListItem extends Component {
                         <View style={styles.payInfoButtonView}>
                             <TouchableOpacity onPress={this.goOrderDetailScreen}><Text>주문상세</Text></TouchableOpacity>
                         </View>
+                        {item.status!=1 && 
                         <View style={styles.payInfoButtonView}>
                             <TouchableOpacity  onPress={this.goDeliveryDetailScreen}><Text>배송조회</Text></TouchableOpacity>
-                        </View>
+                        </View>}
+                        {item.status==1 && 
+                        <View style={styles.payInfoButtonView}>
+                        <TouchableOpacity><Text>배송조회</Text></TouchableOpacity>
+                        </View>}
                         {item.status==2 &&
                         <View style={[styles.payInfoButtonView,{borderColor:'blue'}]}>
                            <TouchableOpacity  onPress={this.orderCompleteButtonClick}><Text style={{color:'blue'}}>구매확정</Text></TouchableOpacity>

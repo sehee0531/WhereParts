@@ -78,10 +78,12 @@ export const styles = StyleSheet.create({
       productInfoLeft:{
         flex:4,
         height:70,
+        //borderWidth:1,
       },
       productInfoRight:{
-        flex:2,
+        flex:2.5,
         alignItems:'flex-end',
+        //borderWidth:1,
       },
     
       productRegisterDate:{

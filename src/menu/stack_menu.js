@@ -15,7 +15,8 @@ import TabHome from "./tab_menu";
 import Gallery from "../goods/register/components/gallery";
 import GalleryX from "../util/gallery_x";
 import GoodsImageCamera from "../goods/register/components/camera_goods_image";
-import WebView from "../goods/list/components/web_view";
+//import SearchWebView from "../goods/list/components/web_view";
+import GoogleWebView from "../util/google_web_view";
 import Payment from "../goods/pay/payment";
 import PayComplete from "../goods/pay/pay_complete";
 import GoodsDetail from "../goods/list/components/item_detail";
@@ -58,7 +59,7 @@ class Stack extends Component {
                     options={{ title: "앨범X", }} />
                 <NativeStack.Screen name="GoodsImageCamera" component={GoodsImageCamera}
                     options={{ title: "카메라", }} />
-                <NativeStack.Screen name="WebView" component={WebView}
+                <NativeStack.Screen name="GoogleWebView" component={GoogleWebView}
                     options={{ title: "" }} />
 
                 <NativeStack.Screen name="Login" component={Login}
@@ -67,7 +68,7 @@ class Stack extends Component {
                      initialParams={{ companyNoImageURL: [],cardImageURL:[],companyNo:"" }} options={{ title: " " }} />
                 <NativeStack.Screen name="RegisterGallery" component={RegisterGallery}/>
                 <NativeStack.Screen name="BusinessCardCamera" component={BusinessCardCamera}
-                    options={{ title: "사업카메라" }} />
+                    options={{ title: "명함" }} />
                 <NativeStack.Screen name="PhotoGallery" component={PhotoGallery}/>
                 <NativeStack.Screen name="CompanyCamera" component={CompanyCamera}
                     options={{ title: "사업자 등록증" }} />

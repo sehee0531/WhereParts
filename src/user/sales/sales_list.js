@@ -155,7 +155,6 @@ class ListItem extends PureComponent {
         this.props.navigation.navigate('GoodsDetail', { id: this.props.item.id, userID: this.props.item.userID });
     }
 
-
     async callGetGoodsImageAPI() {
         let manager = new WebServiceManager(Constant.serviceURL + "/GetGoodsImage?id=" + this.props.id + "&position=1");
         let response = await manager.start();
@@ -167,7 +166,6 @@ class ListItem extends PureComponent {
         const item = this.props.item;
         return (
             <>
-
                 <TouchableOpacity onPress={this.handleDetailViewModal}>
                     <View style={styles.product}>
                         <View style={styles.productRegisterDate}>

@@ -176,7 +176,6 @@ class CameraX extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.viewBodyLayout} onLayout={(event) => this.getViewSize(event)} ref={this.cameraView}>
-                    <View style={{ width: "100%", height: "100%", zIndex:1}}>
                         <Camera
                             ref={this.camera}
                             //frameProcessor={this.frameProcessor}
@@ -186,6 +185,7 @@ class CameraX extends Component {
                             isActive={true}
                         />
                         
+                        <View style={this.props.cutImageStyle} ref={this.capturedView} />
                         {/* cameraBorder가 true이고 좌표계산이 끝났으면 */}
                         {this.props.cameraBorder==true && this.state.capturedViewVisible==true && <>
                             <Image style={this.state.imageTopLeft} source={require('../images/icon/angle-icon/angle11.png')} />
@@ -195,9 +195,9 @@ class CameraX extends Component {
                         }
 
                         {/* 전체화면에서 captured View만 있을 경우 */}
-                        {this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && <>
+                        {this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && this.state.capturedViewVisible==true &&<>
                             <Text style={this.state.textView} /*ref={this.textView}*/>사각형 안에 맞춰주세요</Text>
-                            <View style={this.props.cutImageStyle} ref={this.capturedView} /></>
+                            </>
                         }
 
                         {/* blur==true (captured View이외의 화면을 뿌옇게) 하고 좌표 계산이 끝났으면 */}
@@ -207,7 +207,6 @@ class CameraX extends Component {
                             <View style={this.state.rightBlur} />
                             <View style={this.state.bottomBlur} /></>
                         }
-                    </View>
                 </View>
 
                 <View style={styles.viewBottomLayout}>

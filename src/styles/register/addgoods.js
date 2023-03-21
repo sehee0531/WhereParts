@@ -70,22 +70,41 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
   },
   modal_search_view: {
-    height: 400,
+    height: 380,
     width: 300,
     margin: 20,
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'white',
+    borderColor:'#D1D1D1',
+    borderWidth:1,
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
     shadowColor: '#000',
   },
-
+  modal_button:{
+    borderWidth:1,
+    borderColor:'#D1D1D1',
+    borderRadius:10,
+    width:'30%',
+    height:40,
+    marginHorizontal:'3%',
+    marginVertical:'2%',
+    alignItems:'center',
+    justifyContent:'center',
+  },
   //text
   btn_text: {
     fontFamily: "Cochin",
     fontSize: 16,
     color: "white",
-    alignItems:'center'
+    alignItems:'center',
+  },
+  modal_text:{
+    fontFamily: "Cochin",
+    fontSize: 16,
+    color:'#949CA1',
+    alignItems:'center',
+    marginBottom:'3%'
   },
   camera_text: {
     fontFamily: "Cochin",
