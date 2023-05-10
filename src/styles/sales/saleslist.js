@@ -1,5 +1,7 @@
 //Home Style
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Dimensions } from 'react-native';
+const ScreenHeight=Dimensions.get('window').height;
+const ScreenWidth=Dimensions.get('window').width;
 export const styles = StyleSheet.create({
   wrap: {
     backgroundColor: '#FFF',
@@ -7,7 +9,8 @@ export const styles = StyleSheet.create({
   salesdetailsheader: {
     flexDirection: 'row',
     marginBottom: "5%",
-    padding: "2%"
+    paddingVertical:'2%',
+    paddingHorizontal:'4%'
   },
   headertext: {
     fontSize: 18,
@@ -20,59 +23,62 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Pretendard-SemiBold',
     color: '#000000',
+    paddingBottom:10,
     //marginLeft: "15%",
   },
   product: {
     flex: 1,
+    paddingHorizontal:'2%',
     //flexDirection: 'row',
-    alignItems: 'center',
+   // alignItems: 'center',
     borderWidth:2,
     borderColor:'#E9E9E9',
-    marginTop:"2%",
-    marginLeft:"2%",
-    marginRight:"2%",
-    paddingBottom:"2%",
+   
+    paddingVertical:"2%",
     borderRadius:10,
     backgroundColor: '#FFF',
   },
 
   productImageView: {
-    marginLeft: 5,
-    //borderWidth: 1,
+    borderWidth: 1,
     flexDirection:"row",
     borderColor: '#E9E9E9',
     borderStyle: 'solid',
     overflow: 'hidden',
   },
+  imageView:{
+    width:ScreenWidth/5,
+    height:ScreenWidth/5,
+  },
   productImage: {
     flex: 1,
-    margin: 5,
-    width: 80,
-    height: 80,
+  
+ /*    width: 80,
+    height: 80, */
     borderRadius: 6,
 
   },
   productInfo: {
+    //borderWidth:1,
     flex: 3,
-    height: 70,
-    flexDirection: 'row',
-    marginLeft: 10,
-    marginTop: 5,
-    marginBottom: 5,
-    marginRight: 15,
+    //paddingLeft:'2%',
+    alignItems:'flex-start',
+    justifyContent:'flex-end',
+
+/*     alignItems:'flex-end',
+    justifyContent:'flex-end', */
+
+    //flexDirection: 'row',
   },
-  productInfoLeft: {
-    flex: 4,
-    height: 80,
-    justifyContent:'center'
-  },
+
   productInfoRight: {
     borderTopWidth:1,
+    borderRadius:10,
     borderTopColor:'#D1D1D1',
-    alignItems:'center',
-    marginTop:'1%',
-    paddingTop:'2%',
-    width:"96%",
+    alignItems:'flex-end',
+    justifyContent:'center',
+    //marginTop:'1%',
+    paddingTop:'1%'
   },
 
   productRegisterDate: {
@@ -89,26 +95,30 @@ export const styles = StyleSheet.create({
   // item 글자 디자인
   itemNumberText: {
     fontSize: 15,
+    color:'blue',
     fontFamily: 'Pretendard-SemiBold',
   },
 
   itemNameText: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 16,
+    //fontWeight: 'bold',
     fontFamily: 'Pretendard-Medium',
-    color: '#000000',
+    color: '#000000', 
   },
   itemRegisterDateText: {
-    fontSize: 14
+    fontSize: 15,
+    color:'black'
   },
   itemDistanceText: {
     fontSize: 15,
     fontFamily: 'Pretendard-SemiBold',
+    color:'black'
   },
   itemPriceText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 15,
+    //fontWeight: 'bold',
     fontFamily: 'Pretendard-SemiBold',
-    color: '#000000',
+    fontWeight:'600',
+    color: 'black',
   },
 });

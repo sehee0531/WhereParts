@@ -85,6 +85,9 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
+//Firebase Cloud messaging
+apply plugin: "com.google.gms.google-services"
+
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -293,6 +296,9 @@ dependencies {
 
     // 객체 <-> json 라이브러리
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //Firebase Cloud Messaging
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
 }
 
 if (isNewArchitectureEnabled()) {

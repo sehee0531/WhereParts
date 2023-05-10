@@ -29,9 +29,5 @@
         <activity android:name=".payment.PaymentMainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
-
-        <activity android:name=".payment.PaymentMainActivity2"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
     </application>
 </manifest>

@@ -5,36 +5,49 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //마이페이지
 import MyPage from "../user/mypage";
+
+//판매내역
 import SalesList from "../user/sales/sales_list";
+
+//구매내역
 import BuyList from "../user/buy/buy_list";
+
+//관심목록
 import PickList from "../user/buy/pick_list";
+
+//배송등록
 import AddDelivery from "../user/sales/add_delivery";
+
+//배송조회
 import DeliveryDetail from "../user/buy/delivery_detail";
+
 //경로를 위한
 import TabHome from "./tab_menu";
-import Gallery from "../goods/register/components/gallery";
+import Gallery from "../goods/register/gallery";
 import GalleryX from "../util/gallery_x";
-import GoodsImageCamera from "../goods/register/components/camera_goods_image";
-//import SearchWebView from "../goods/list/components/web_view";
+import GoodsImageCamera from "../goods/register/camera_goods_image";
 import GoogleWebView from "../util/google_web_view";
+
+//결제창
 import Payment from "../goods/pay/payment";
+//결제완료
 import PayComplete from "../goods/pay/pay_complete";
-import GoodsDetail from "../goods/list/components/item_detail";
+
+//상품상세
+import GoodsDetail from "../goods/list/item_detail";
+
 import OrderDetail from "../user/buy/order_detail";
 import EditProfile from "../user/buy/edit_profile";
 
 
 //로그인 경로
-import Login from "../login/member_register";
+import Login from "../login/login";
 import SignUp from "../login/signup";
-import RegisterGallery from "../login/gallery_register";
-import BusinessCardCamera from "../login/camera_business_card";
-import PhotoGallery from "../login/gallery_photo";
-import CompanyCamera from "../login/camera_company";
-import PartsNoCamera from "../goods/register/components/camera_goods_no";
+import SignUpGallery from "../login/gallery";
+import SignUpCamera from "../login/camera";
+import PartsNoCamera from "../goods/register/camera_goods_no";
 
 //주소검색
-import Address from "../goods/pay/address";
 import SearchAddress from "../goods/pay/address_search";
 
 const NativeStack = createNativeStackNavigator();
@@ -66,12 +79,8 @@ class Stack extends Component {
                     options={{ headerShown: false }} />
                 <NativeStack.Screen name="SignUp" component={SignUp} 
                      initialParams={{ companyNoImageURL: [],cardImageURL:[],companyNo:"" }} options={{ title: " " }} />
-                <NativeStack.Screen name="RegisterGallery" component={RegisterGallery}/>
-                <NativeStack.Screen name="BusinessCardCamera" component={BusinessCardCamera}
-                    options={{ title: "명함" }} />
-                <NativeStack.Screen name="PhotoGallery" component={PhotoGallery}/>
-                <NativeStack.Screen name="CompanyCamera" component={CompanyCamera}
-                    options={{ title: "사업자 등록증" }} />
+                <NativeStack.Screen name="SignUpGallery" component={SignUpGallery} options={{ title: "사진선택" }}/>
+                <NativeStack.Screen name="SignUpCamera" component={SignUpCamera} options={{ title: "사진촬영" }} />
                 <NativeStack.Screen name="PartsNoCamera" component={PartsNoCamera}
                     options={{ title: "" }} />
 
@@ -80,9 +89,9 @@ class Stack extends Component {
                 <NativeStack.Screen name="EditProfile" component={EditProfile}
                     options={{ title: "" }}/>
                 <NativeStack.Screen name="SalesList" component={SalesList}
-                    options={{ title: "판매 내역" }}/>
+                    options={{ title: "판매 내역",headerBackVisible:false }}/>
                 <NativeStack.Screen name="BuyList" component={BuyList}
-                    options={{ title: "구매 내역" }} />
+                    options={{ title: "구매 내역",headerBackVisible:false}} />
                 <NativeStack.Screen name="PickList" component={PickList}
                     options={{ title: "관심 목록" }} />
                 <NativeStack.Screen name="AddDelivery" component={AddDelivery}
@@ -93,12 +102,11 @@ class Stack extends Component {
 
                 <NativeStack.Screen name="Payment" component={Payment}
                     options={{ title: "결제" }} />
-                <NativeStack.Screen name="PayComplete" component={PayComplete}
-                     options={{ title: "결제완료" }} />
+                <NativeStack.Screen name="PayComplete" component={PayComplete} 
+                     options={{ title: "결제완료", headerBackVisible:false}} />
                 <NativeStack.Screen name="GoodsDetail" component={GoodsDetail}
-                    options={{ headerShown: false }}  />
-                <NativeStack.Screen name="Address" component={Address}
-                    options={{ title: "주소" }} />
+                    options={{ headerShown: false }} />
+              
                 <NativeStack.Screen name="SearchAddress" component={SearchAddress}
                     options={{ title: "주소검색" }} />
            

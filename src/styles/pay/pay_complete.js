@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
   paymentButton:{
     justifyContent: 'center',
     alignItems: 'center',
-    height: 40,
+    height: 50,
     width: "auto",
     borderRadius: 5,
     backgroundColor: '#0066FF', 
@@ -125,7 +125,7 @@ export const styles = StyleSheet.create({
   },
 
   btn: {
-    width: 100,
+    width: 130,
     height: 55,
     backgroundColor: "black",
     alignItems: 'center',

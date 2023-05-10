@@ -15,7 +15,7 @@ class CameraX extends Component {
         this.camera = React.createRef();
         this.capturedView = React.createRef();
         this.cameraView = React.createRef();
-        //this.textView= React.createRef();
+        //this.topTextView= React.createRef();
         this.source={};
         this.target={};
         //this.text={};
@@ -39,8 +39,8 @@ class CameraX extends Component {
             imageBottomLeft:{},
             imageBottomRight:{},
 
-            textView:{},
-
+            topTextView:{},
+            bottomTextView:{},
             capturedViewVisible:false
             //cameraButtonView:{},
         };
@@ -124,13 +124,15 @@ class CameraX extends Component {
         //console.log("sourceHeight", sourceHeight);// sourceHeight 0
         if (this.props.hasOwnProperty("onCutImageListener") && this.props.hasOwnProperty("cutImageStyle")) {
             this.capturedView.current.measure((fx, fy, width, height, px, py) => {
+            
                 this.target = { top: py - topMargin, left: px - leftMargin, width: width, height: height };
                 //console.log("sourceHeight",sourceHeight); // sourceHeight 645
-
+                
                 // 사진 안내문구 위치 설정(capturedView 위에 위치하도록)
                 this.setState({
-                    //textView height:20, width:140 
-                    textView: { top: (this.target.top - 20), left: (this.source.width - 140) / 2, color: "white", position: 'absolute', zIndex: 3 },
+                    //topTextView height:20, width:140 
+                    topTextView: { top: (this.target.top -40), alignSelf:'center',  position: 'absolute', zIndex: 3 },
+                    bottomTextView:{top: (this.target.top +this.target.height+15), alignSelf:'center',  position: 'absolute', zIndex: 3,  }
                 });
 
                 // blur를 true로 받을 때
@@ -160,10 +162,10 @@ class CameraX extends Component {
         
         /*
         // height 측정은 o, width는 전체 너비로 결과가 나옴
-        this.textView.current.measure((fx, fy, width, height, px, py) => {
+        this.topTextView.current.measure((fx, fy, width, height, px, py) => {
             this.text={width:width,height:height};
 
-            this.setState({textView: {top:0,left:(this.source.width-this.text.width)/2,color:"white",borderWidth:1,position:'absolute',zIndex:2}})
+            this.setState({topTextView: {top:0,left:(this.source.width-this.text.width)/2,color:"white",borderWidth:1,position:'absolute',zIndex:2}})
             console.log('text',this.text.width);
         });
         */
@@ -195,10 +197,19 @@ class CameraX extends Component {
                         }
 
                         {/* 전체화면에서 captured View만 있을 경우 */}
-                        {this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && this.state.capturedViewVisible==true &&<>
-                            <Text style={this.state.textView} /*ref={this.textView}*/>사각형 안에 맞춰주세요</Text>
+                        {this.props.hasOwnProperty("upperText") &&this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && this.state.capturedViewVisible==true &&<>
+                            <View style={[this.state.topTextView,styles.topTextViewStyle]} /*ref={this.topTextView}*/>
+                                <Text style={{color:'white'}}>{this.props.upperText}</Text>
+                            </View>
                             </>
                         }
+                        {this.props.hasOwnProperty("downText")&&this.props.hasOwnProperty("cutImageStyle") && this.props.hasOwnProperty("onCutImageListener") && this.state.capturedViewVisible==true &&<>
+                          <View style={this.state.bottomTextView}>
+                            <Text style={{color:'white',textAlign:'center'}} /*ref={this.topTextView}*/>{this.props.downText}</Text>
+                          </View>
+                          
+                          </>
+                      }
 
                         {/* blur==true (captured View이외의 화면을 뿌옇게) 하고 좌표 계산이 끝났으면 */}
                         {this.props.blur==true && this.state.capturedViewVisible==true && <>

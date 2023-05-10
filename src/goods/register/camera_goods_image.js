@@ -4,8 +4,8 @@ import {
     ImageBackground, Modal, DeviceEventEmitter, BackHandler
 } from 'react-native';
 
-import CameraX from '../../../util/camera_x';
-import { styles } from "../../../styles/register/addgoods_camera_style";
+import CameraX from '../../util/camera_x';
+import { styles } from "../../styles/register/addgoods_camera_style";
 import IconDelete from 'react-native-vector-icons/Ionicons';
 import IconCircle from "react-native-vector-icons/FontAwesome";
 import IconPicture from "react-native-vector-icons/SimpleLineIcons";

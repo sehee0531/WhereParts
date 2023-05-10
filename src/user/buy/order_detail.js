@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity,BackHandler } from 'react-native';
 import { useValue } from 'react-native-reanimated';
-import { styles } from "../../styles/order_detail";
+import { styles } from "../../styles/buy/order_detail";
 import { template } from "../../styles/template/page_style";
 import Constant from '../../util/constatnt_variables';
 import WebServiceManager from '../../util/webservice_manager';
@@ -9,8 +9,8 @@ import WebServiceManager from '../../util/webservice_manager';
 class OrderDetail extends Component {
     constructor(props) {
         super(props);
-        this.id = this.props.route.params.id;
 
+        this.orderID = this.props.route.params.orderID;
         this.state = {
             item: {},
             days: []
@@ -21,7 +21,12 @@ class OrderDetail extends Component {
             this.setState({ item: response, days: response.days });
             console.log(response);
         })
+        BackHandler.addEventListener("hardwareBackPress", this.backPressed); //뒤로가기 이벤트
     }
+    componentWillUnmount() {
+        BackHandler.removeEventListener("hardwareBackPress", this.backPressed);
+    }
+
 
     //웹뷰로 영수증 보기
     goReceiptWebView = () => {
@@ -29,7 +34,7 @@ class OrderDetail extends Component {
     }
 
     async callGetOrderDetailAPI() {
-        let manager = new WebServiceManager(Constant.serviceURL + "/GetOrderDetail?id=" + this.id);
+        let manager = new WebServiceManager(Constant.serviceURL + "/GetOrderDetail?id=" + this.orderID);
         let response = await manager.start();
         if (response.ok) {
             return response.json();
@@ -37,7 +42,10 @@ class OrderDetail extends Component {
         else
             Promise.reject(response);
     }
-
+    backPressed = () => {
+        this.props.navigation.pop();
+        return true;
+    }
     render() {
         const { id, orderNo, goodsName, goodsNo, buyerName, buyerTel, quantity, price, total, orderingDate, payKind, payBank, address, status, days, invoiceName, invoiceNo } = this.state.item;
 
@@ -47,7 +55,7 @@ class OrderDetail extends Component {
                 <ScrollView >
                     <View style={styles.dateInfo_view}>
                         <Text style={styles.text_info}>{orderingDate}</Text>
-                        <Text style={styles.text}>주문번호: {id}</Text>
+                        <Text style={styles.text}>주문번호: {orderNo}</Text>
                     </View>
                     <View style={styles.payInfo_view}>
                         <View style={styles.payInfoTitle_view}>
@@ -90,7 +98,7 @@ class OrderDetail extends Component {
                                     <Text style={styles.text}>결제수단</Text>
                                 </View>
                                 <View style={{ width: '70%' }}>
-                                    <Text style={styles.text_info}>{payKind == 1 && "신용카드"} ({payBank})</Text>
+                                    <Text style={styles.text_info}>{payKind} ({payBank})</Text>
                                 </View>
                             </View>
                             <View style={{ flexDirection: 'row' }}>
@@ -115,7 +123,7 @@ class OrderDetail extends Component {
                                 </View>
                                 <View style={{ width: '70%' }}>
                                     <TouchableOpacity onPress={this.goReceiptWebView}>
-                                        <Text style={styles.text_info}>확인하기</Text>
+                                        <Text style={[styles.text_info,{color:'blue'}]}>확인하기</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

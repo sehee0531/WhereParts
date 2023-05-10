@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.whereparts.R;
 
 public class StartOrderFragment extends Fragment {
+    /*
     private OnClickListener listener;
     //private TextView txtName, txtNo, txtPrice, txtQuantity, txtTotal, txtSpec;
 
@@ -57,4 +58,5 @@ public class StartOrderFragment extends Fragment {
     public void setClickListener(OnClickListener listener) {
         this.listener=listener;
     }
+    */
 }

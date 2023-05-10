@@ -3,11 +3,17 @@ import {Dimensions, Image, Platform, Pressable, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 // 경로를 위한 import
-import Home from '../goods/list/components/home';
-import AddGoods from '../goods/register/components/add_goods';
+
+//홈
+import Home from '../goods/list/home';
+//import Home from '../goods/list/home_1';
+//import Home from '../goods/list/home_2';
+//import Home from '../goods/list/home_3';
+//import Home from '../goods/list/home_4';
+
+import AddGoods from '../goods/register/add_goods';
 import MyPage from '../user/mypage';
-import ShopHistory from '../user/shophistory'; //
-import CS from '../user/cs';
+import Notification from '../user/notification';
 
 const Tab = createBottomTabNavigator(); // Tab 일 경우
 
@@ -20,9 +26,21 @@ const styles = StyleSheet.create({
 });
 
 class Tabs extends Component {
+  constructor(props){
+    super(props);
+
+    this.initialTabMenu='Home';
+    if(this.props.route.params != null){
+      const params = this.props.route.params;
+      if(params.hasOwnProperty("initialTabMenu"))
+        this.initialTabMenu = params.initialTabMenu;
+    }
+  }
+
   render() {
     return (
       <Tab.Navigator
+        initialRouteName={this.initialTabMenu}
         screenOptions={{
           headerTitleAlign: 'center',
           headerShown: true,
@@ -105,10 +123,10 @@ class Tabs extends Component {
         />
        
         <Tab.Screen
-          name="CS"
-          component={CS} // 변경해야됨
+          name="Notice"
+          component={Notification} // 변경해야됨
           options={{
-            title: 'CS',
+            title: '알림',
             tabBarIcon: ({focused}) => {
               return (
                 <Image

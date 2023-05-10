@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, BackHandler, TouchableOpacity } from 'react-native';
 
 import { template } from "../../styles/template/page_style";
-import { styles } from "../../styles/payment";
+import { styles } from "../../styles/pay/pay_complete";
 import WebServiceManager from '../../util/webservice_manager';
 import Constant from '../../util/constatnt_variables';
+
+import FunctionUtil from '../../util/libraries_function';
 
 class PayComplete extends Component {
     constructor(props) {
@@ -58,20 +60,20 @@ class PayComplete extends Component {
     render() {
         const { orderNo, goodsName, goodsNo, 
                 quantity, payBank, total, address,
-                buyerName, buyerTel } = this.state.item;
+                buyerName, buyerTel,zipCode } = this.state.item;
         return (
-            <View style={template.total_container}>
+            <View style={template.baseContainer}>
                 <ScrollView>
-                    <View style={template.container}>
+                    <View style={[template.container,{marginTop:'3%'}]}>
                         <Text>결제가 완료되었습니다</Text>
                         <View style={[styles.indexView,{marginBottom: 20 }]}>
                             <Text style={styles.indexText}>주문상품</Text>
                             <Text> 주문번호 : {orderNo}</Text>
-                            <Text> 상품명 : {goodsName}</Text>
+                            <Text> 상품명 : {`${goodsName}`.length > 20 ? `${goodsName.slice(0, 20)}...` : goodsName}</Text>
                             <Text> 상품번호 : {goodsNo}</Text>
                             <Text> 수량 : {quantity}{"\n"}</Text>
                             <View style={{ flexDirection: 'row' }}>
-                                <Text style={{ fontSize: 20, color: 'black' }}> {total}원</Text>
+                                <Text style={{ fontSize: 20, color: 'black' }}> {FunctionUtil.getPrice(`${total}`)}원</Text>
 
                             </View>
                         </View>
@@ -79,9 +81,9 @@ class PayComplete extends Component {
                             <Text style={styles.indexText}>결제정보</Text>
                             <Text> 결제카드 : {payBank}</Text>
                             <Text> 할부기간 : 일시불</Text>
-                            <Text> 결제금액 : {total}원</Text>
+                            <Text> 결제금액 : {FunctionUtil.getPrice(`${total}`)}원</Text>
                             <TouchableOpacity onPress={this.goReceiptWebView}>
-                                <Text> 영수증 보기</Text>
+                                <Text style={{color:'blue'}}> 영수증 보기</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={[styles.indexView,{marginBottom: 20 }]}>
@@ -89,6 +91,7 @@ class PayComplete extends Component {
                             <Text> {buyerName}</Text>
                             <Text> {buyerTel}</Text>
                             <Text> {address}  </Text>
+                            <Text> {zipCode}  </Text>
                         </View>
                         <View style={styles.buttonView}>
                             <TouchableOpacity style={[styles.goListButton,{marginRight:10}]} onPress={this.goHomeScreen}><Text style={styles.buyButtonText}>홈으로</Text></TouchableOpacity>

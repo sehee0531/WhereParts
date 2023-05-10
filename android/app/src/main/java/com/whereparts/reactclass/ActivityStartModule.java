@@ -3,8 +3,6 @@ package com.whereparts.reactclass;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.activity.result.ActivityResult;
-
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Callback;
@@ -12,10 +10,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.google.gson.Gson;
-import com.whereparts.MainActivity;
-import com.whereparts.payment.PaymentMainActivity;
 import com.whereparts.payment.PayloadEntity;
-import com.whereparts.payment.PaymentMainActivity2;
+import com.whereparts.payment.PaymentMainActivity;
 
 public class ActivityStartModule extends ReactContextBaseJavaModule {
     private ReactApplicationContext context;
@@ -39,7 +35,7 @@ public class ActivityStartModule extends ReactContextBaseJavaModule {
         try {
             this.context.addActivityEventListener(paymentEventListener);
             Activity currentActivity = getCurrentActivity();
-            Intent intent = new Intent(context, PaymentMainActivity2.class);
+            Intent intent = new Intent(context, PaymentMainActivity.class);
             Gson gson = new Gson();
             PayloadEntity entity = gson.fromJson(payload,PayloadEntity.class);
             intent.putExtra("data",entity);

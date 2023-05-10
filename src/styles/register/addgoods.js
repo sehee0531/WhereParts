@@ -1,6 +1,31 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  addgoods_total_view:{
+    flex: 1,
+    backgroundColor: '#FFFF',
+    paddingHorizontal: '4%',
+},
+/* addgoods_content_view:{
+    borderWidth: 1, 
+    borderRadius: 15, 
+    borderColor:'#D1D1D1',
+    paddingHorizontal: '2%', 
+    paddingVertical:'2%',
+    marginBottom: '2%',
+}, */
+addgoods_textInput_style:{
+    fontSize:15,
+    height:30,
+    padding:0
+},
+addgoods_quantity_btn:{
+    width:35,
+    height:35, 
+    backgroundColor: 'white', 
+    borderWidth: 0.7, 
+    borderColor: '#D1D1D1' 
+},
   //View
   row_view: {
     flex: 1,
@@ -110,7 +135,7 @@ export const styles = StyleSheet.create({
     fontFamily: "Cochin",
     fontSize: 13,
     color: "gray",
-    marginBottom: 15
+    marginBottom: 5
   },
   errormessage_text: {
     fontSize: 13,
@@ -121,54 +146,51 @@ export const styles = StyleSheet.create({
     fontFamily: "Cochin",
     fontSize: 17,
     color: "black",
-    marginBottom: 15,
-    marginTop: 15,
+    marginBottom: 10,
+    marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   //textInput 모으기
-  product_textInput: {
+ /*  product_textInput: {
     backgroundColor: 'white',
     marginBottom: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    height: 70,
+    paddingHorizontal: 10,
+    height: 55,
     borderRadius: 10,
     borderColor: '#D1D1D1',
-    borderWidth: 2,
-  },
+    borderWidth: 1,
+  }, */
   sales_quantity_textInput: { // 판매개수
-    flex: 2,
+    backgroundColor: "white",
+    width:'13%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: "white",
     borderColor: '#D1D1D1',
-    borderWidth: 2,
+    borderWidth: 0.7,
     borderRadius: 10,
-    height: 55,
+    height: 35,
   },
   status_textInput: {
     backgroundColor: 'white',
     marginBottom: 20,
     marginTop: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    height: 75,
+    paddingHorizontal: 10,
+    //paddingVertical: 10,
+    height: 60,
     borderRadius: 10,
     borderColor: '#D1D1D1',
-    borderWidth: 2,
+    borderWidth: 1,
   },
   textDetailInput: {
     backgroundColor: 'white',
-    marginBottom: 50,
-    marginTop: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    height: 140,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    height: 100,
     borderRadius: 10,
     borderColor: '#D1D1D1',
-    borderWidth: 2,
+    borderWidth: 1,
   },
 
   //버튼 모으기
@@ -183,8 +205,8 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   add_btn: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     backgroundColor: "black",
     alignItems: 'center',
     justifyContent: 'center',
